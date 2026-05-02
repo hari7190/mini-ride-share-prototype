@@ -1,0 +1,12 @@
+kubectl config for local
+
+
+# Backup your current config just in case
+cp ~/.kube/config ~/.kube/config.bak
+
+# Merge the files (this assumes you have the 'KUBECONFIG' env set to both files)
+KUBECONFIG=~/.kube/config:~/.kube/config-remote kubectl config view --flatten > ~/.kube/config_merged
+mv ~/.kube/config_merged ~/.kube/config
+
+# Switch to the remote context
+kubectl config use-context microk8s
