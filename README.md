@@ -1,27 +1,54 @@
-TODO: Update README
+# Mini Ride-Share Platform (Spring Boot + Kafka + K8s)
 
+This project is a small ride-share style app I built to practice and demo that I can take something from idea to production-ish setup.
 
-This is the root of the mini ride-share app project. 
+It covers the full flow: 
 
-This will contain
-  - auth-gateway-service
-  - rider-service
-  - driver-service
-  - dispatch-engine
-  - location-tracker
-  - common-dto
+- writing backend services in Java/Spring Boot, 
+- wiring async events with Kafka, 
+- storing core data in MySQL, 
+- using Redis for fast lookups, and 
+- adding Python jobs for background processing/analytics.
 
+Then I deploy everything on **Kubernetes** and manage releases the **GitOps** way with ArgoCD on a **Bare-Metal cluster**. 
 
+Hardware - R720 PowerEdge Server x 4 (From my **Homelab**)
 
-K8s related setup
+The goal isn’t to build a full Uber clone - it’s to show practical engineering skills across:
 
-Enabled metallb for provisioning LBs
-Enabled microk8s dashboard
-Installed argocd
-brought in remote config from cluster host into laptop
+- service design and API development
+- event-driven architecture
+- caching + database usage
+- containerization and K8s deployment
+- CI/CD + GitOps workflows
+- basic scaling patterns (replicas, Kafka partitions, stateless services)
 
-patched svc for k8s and argocd dashboards
-    kubectl patch svc kubernetes-dashboard-kong-proxy -n kubernetes-dashboard -p '{"spec": {"type": "LoadBalancer"}}'
-    kubectl patch svc argocd-server -n kubernetes-dashboard -p '{"spec": {"type": "LoadBalancer"}}'
+You can think of it as a “real-world-ish” demo project that proves I can design, code, ship, and scale a distributed system with a modern stack.
 
-    retrieved argocd-initial-admin-secret
+---
+
+## Technical Details
+
+*TODO: Update README as I progress through implementation*
+
+### App will (probably) contain
+
+- auth-gateway-service
+- rider-service
+- driver-service
+- dispatch-engine
+- location-tracker
+- common-dto
+
+### K8s related setup
+
+- Enabled metallb for provisioning LBs
+- Enabled microk8s dashboard
+- Installed argocd
+- brought in remote config from cluster host into laptop
+- patched svc for k8s and argocd dashboards
+  > kubectl patch svc kubernetes-dashboard-kong-proxy -n kubernetes-dashboard -p '{"spec": {"type": "LoadBalancer"}}'
+  >
+  > kubectl patch svc argocd-server -n kubernetes-dashboard -p '{"spec": {"type": "LoadBalancer"}}'
+- Configure mysql password as secrets outside of git
+

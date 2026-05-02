@@ -1,0 +1,4 @@
+apiVersion: v2
+name: mysql-db
+version: 1.0.0
+description: A simple MySQL chart for my local cluster
