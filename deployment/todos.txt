@@ -10,3 +10,7 @@ mv ~/.kube/config_merged ~/.kube/config
 
 # Switch to the remote context
 kubectl config use-context microk8s
+
+
+Things to automate-
+kubectl create namespace dev

@@ -50,5 +50,8 @@ You can think of it as a “real-world-ish” demo project that proves I can des
   > kubectl patch svc kubernetes-dashboard-kong-proxy -n kubernetes-dashboard -p '{"spec": {"type": "LoadBalancer"}}'
   >
   > kubectl patch svc argocd-server -n kubernetes-dashboard -p '{"spec": {"type": "LoadBalancer"}}'
+
+
+Things to automate
 - Configure mysql password as secrets outside of git
 

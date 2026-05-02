@@ -5,7 +5,6 @@ metadata:
   name: {{ .Release.Name }}-mysql
 spec:
   type: LoadBalancer
-  loadBalancerIP: {{ .Values.loadBalancerIP }}  # Pulls from values.yaml
   ports:
     - port: 3306
       targetPort: 3306
@@ -22,7 +21,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.storageSize }}        # Pulls from values.yaml
+      storage: {{ .Values.storageSize }}  # Pulls from values.yaml
 ---
 # 3. The Deployment
 apiVersion: apps/v1
@@ -41,7 +40,7 @@ spec:
         app: {{ .Release.Name }}-mysql
     spec:
       containers:
-      - image: {{ .Values.image }}              # Pulls from values.yaml
+      - image: {{ .Values.image }}     # Pulls from values.yaml
         name: mysql
         env:
         - name: MYSQL_ROOT_PASSWORD
