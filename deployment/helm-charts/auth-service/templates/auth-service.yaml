@@ -19,7 +19,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "auth-service.fullname" . }}
+  name: {{ .Release.Name }}-auth-service
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:

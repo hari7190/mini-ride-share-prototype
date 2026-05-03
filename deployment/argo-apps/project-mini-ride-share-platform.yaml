@@ -1,0 +1,12 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mini-ride-share-platform
+  namespace: argocd
+spec:
+  description: Mini ride-share platform applications
+  sourceRepos:
+    - https://github.com/hari7190/mini-ride-share-prototype.git
+  destinations:
+    - namespace: dev
+      server: https://kubernetes.default.svc
