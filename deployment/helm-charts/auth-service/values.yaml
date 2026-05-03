@@ -1,0 +1,15 @@
+replicaCount: 1
+
+image:
+  repository: dockerprogram/mini-ride-share-platform
+  tag: auth-service-v1
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 8080
+
+env:
+  MYSQL_HOST: "mysql-service.dev.svc.cluster.local" # Internal K8s DNS
+  MYSQL_PORT: "3306"
+  MYSQL_DATABASE: "ride_share_db"
