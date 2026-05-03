@@ -5,6 +5,9 @@ image:
   tag: auth-service-latest
   pullPolicy: Always
 
+imagePullSecrets:
+  - name: dockerhubcredentials
+
 service:
   type: ClusterIP
   port: 8080
