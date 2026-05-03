@@ -26,6 +26,12 @@ The goal isn’t to build a full Uber clone - it’s to show practical engineeri
 You can think of it as a “real-world-ish” demo project that proves I can design, code, ship, and scale a distributed system with a modern stack.
 
 ---
+## Arch Diagram
+
+![Architecture diagram](docs/images/arch-diagram.drawio.svg)
+
+
+---
 
 ## Technical Details
 
