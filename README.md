@@ -53,5 +53,8 @@ You can think of it as a “real-world-ish” demo project that proves I can des
 
 
 Things to automate
-- Configure mysql password as secrets outside of git
+- Configure mysql password, jwt secret, dockerhub as secrets outside of git
+- Creating ingress-controller(nginx) & Patch it to type LB
+ > kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/baremetal/deploy.yaml
+ > kubectl patch svc ingress-nginx-controller -n ingress-nginx -p '{"spec": {"type": "LoadBalancer"}}'
 

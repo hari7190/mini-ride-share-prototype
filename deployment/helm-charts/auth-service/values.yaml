@@ -15,4 +15,4 @@ service:
 env:
   MYSQL_PORT: "3306"
   MYSQL_DATABASE: "ride_share_db"
-  MYSQL_HOST: "mysql-dev-mysql"
+  MYSQL_HOST: "mysql-dev-mysql" # This needs to be fixed to be flexible for different environments
