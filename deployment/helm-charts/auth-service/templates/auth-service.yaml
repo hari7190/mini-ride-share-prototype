@@ -21,6 +21,7 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-auth-service
 spec:
+  revisionHistoryLimit: 3
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
