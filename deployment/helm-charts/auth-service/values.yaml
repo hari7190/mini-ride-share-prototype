@@ -13,6 +13,5 @@ service:
   port: 8080
 
 env:
-  MYSQL_HOST: "mysql-service.dev.svc.cluster.local" # Internal K8s DNS
   MYSQL_PORT: "3306"
   MYSQL_DATABASE: "ride_share_db"

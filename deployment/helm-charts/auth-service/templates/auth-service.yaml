@@ -49,4 +49,4 @@ spec:
                   name: jwt-secret
                   key: secret
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:mysql://{{ .Values.env.MYSQL_HOST }}:{{ .Values.env.MYSQL_PORT }}/{{ .Values.env.MYSQL_DATABASE }}"
+              value: "jdbc:mysql://{{ .Release.Name }}-mysql.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.env.MYSQL_PORT }}/{{ .Values.env.MYSQL_DATABASE }}"
