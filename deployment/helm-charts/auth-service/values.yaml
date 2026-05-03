@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: dockerprogram/mini-ride-share-platform
-  tag: auth-service-v1
+  tag: auth-service-latest
   pullPolicy: Always
 
 service:
