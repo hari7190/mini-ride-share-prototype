@@ -26,10 +26,12 @@ The goal isn’t to build a full Uber clone - it’s to show practical engineeri
 You can think of it as a “real-world-ish” demo project that proves I can design, code, ship, and scale a distributed system with a modern stack.
 
 ---
-## Arch Diagram
+## Diagrams & Screenshots
 
 ![Architecture diagram](docs/images/arch-diagram.drawio.svg)
 
+## Argo CD
+![Argo CD](docs/images/argo-cd.png)
 
 ---
 
@@ -62,5 +64,6 @@ Things to automate
 - Configure mysql password, jwt secret, dockerhub as secrets outside of git
 - Creating ingress-controller(nginx) & Patch it to type LB
  > kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/baremetal/deploy.yaml
+ >
  > kubectl patch svc ingress-nginx-controller -n ingress-nginx -p '{"spec": {"type": "LoadBalancer"}}'
 
