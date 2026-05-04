@@ -73,3 +73,8 @@ Things to automate
 ## Debugging
 
 Notes on troubleshooting this setup: [Debugging](docs/Debugging.md).
+
+
+## To Do
+
+1. Move DTOs into a depedency model.
