@@ -58,6 +58,11 @@ spec:
                 secretKeyRef:
                   name: mysql-pass-secret 
                   key: password
+            - name: MYSQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-user-name
+                  key: username
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
