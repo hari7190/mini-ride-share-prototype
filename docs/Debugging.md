@@ -25,3 +25,6 @@ Problems:
 2. auth-ingress still shows host ip! I want my nginx ingress ip there.
 NAME           CLASS   HOSTS   ADDRESS         PORTS   AGE
 auth-ingress   nginx   *       192.168.xx.xxx   80      10h
+
+3. Lost the ingressClass name "nginx" which is supposed to point to "k8s.io/ingress-nginx" controller. Create a definition as seen on deployment/manifests/ingress-class.yaml. - Need to investigate why it is lost. I suspect this was a result of removing the native ingress controller of microk8s in favor of official nginx ingress controller.
+symptom - On calling auth-service, it throws a 404 at nginx level.
