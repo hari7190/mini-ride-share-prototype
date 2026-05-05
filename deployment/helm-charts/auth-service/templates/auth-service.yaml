@@ -4,7 +4,7 @@ metadata:
   name: auth-ingress
   annotations:
 spec:
-  ingressClassName: nginx  
+  ingressClassName: k8s.io/ingress-nginx  
   rules:
   - http:
       paths:
