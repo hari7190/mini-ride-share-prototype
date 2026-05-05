@@ -78,3 +78,8 @@ Notes on troubleshooting this setup: [Debugging](docs/Debugging.md).
 ## To Do
 
 1. Move DTOs into a depedency model.
+
+
+Decisions :
+1. Not using Spring security AuthenticationManagement for the MVP
+2. Going with a shared secret on K8s for the jwt public key. Later move it into a JWKS endpoint on authservice and limit the public key to only one service. Need to think of trade offs there.
