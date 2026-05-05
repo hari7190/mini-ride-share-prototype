@@ -25,3 +25,20 @@ build/
 .settings/
 .vscode/
 /jvm_tuning
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Terraform variable files (often contain secrets)
+*.tfvars
+*.tfvars.json
