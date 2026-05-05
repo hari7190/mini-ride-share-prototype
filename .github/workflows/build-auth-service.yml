@@ -42,8 +42,8 @@ jobs:
           context: ./services/auth-service
           push: true
           tags: |
-            dockerprogram/mini-ride-share-platform:auth-service-latest
-            dockerprogram/mini-ride-share-platform:auth-service-${{ github.sha }}
+            ${{ secrets.DOCKER_IMAGE_REPO }}:auth-service-latest
+            ${{ secrets.DOCKER_IMAGE_REPO }}:auth-service-${{ github.sha }}
 
   build-rider:
     needs: changes
@@ -62,5 +62,5 @@ jobs:
           context: ./services/rider-service
           push: true
           tags: |
-            dockerprogram/mini-ride-share-platform:rider-service-latest
-            dockerprogram/mini-ride-share-platform:rider-service-${{ github.sha }}
+            ${{ secrets.DOCKER_IMAGE_REPO }}:rider-service-latest
+            ${{ secrets.DOCKER_IMAGE_REPO }}:rider-service-${{ github.sha }}
