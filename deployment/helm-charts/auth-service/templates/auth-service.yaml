@@ -1,10 +1,17 @@
 apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx  # Use a valid K8s name (no slashes)
+spec:
+  controller: k8s.io/ingress-nginx # This is the specific ID Nginx looks for
+---
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: auth-ingress
   annotations:
 spec:
-  ingressClassName: k8s.io/ingress-nginx  
+  ingressClassName: nginx 
   rules:
   - http:
       paths:
