@@ -8,11 +8,27 @@ on:
       - 'services/rider-service/**'
 
 jobs:
-  build-auth:
+  # This job detects what actually changed
+  changes:
     runs-on: ubuntu-latest
-    # Optional: Only run this job if auth-service files changed
     outputs:
-      auth_changed: ${{ steps.check_auth.outputs.changed }}
+      auth: ${{ steps.filter.outputs.auth }}
+      rider: ${{ steps.filter.outputs.rider }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            auth:
+              - 'services/auth-service/**'
+            rider:
+              - 'services/rider-service/**'
+
+  build-auth:
+    needs: changes
+    if: ${{ needs.changes.outputs.auth == 'true' }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
@@ -30,6 +46,8 @@ jobs:
             dockerprogram/mini-ride-share-platform:auth-service-${{ github.sha }}
 
   build-rider:
+    needs: changes
+    if: ${{ needs.changes.outputs.rider == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
