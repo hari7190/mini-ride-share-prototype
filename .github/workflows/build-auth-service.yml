@@ -1,0 +1,48 @@
+name: Build Microservices
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'services/auth-service/**'
+      - 'services/rider-service/**'
+
+jobs:
+  build-auth:
+    runs-on: ubuntu-latest
+    # Optional: Only run this job if auth-service files changed
+    outputs:
+      auth_changed: ${{ steps.check_auth.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and Push Auth Service
+        uses: docker/build-push-action@v5
+        with:
+          context: ./services/auth-service
+          push: true
+          tags: |
+            dockerprogram/mini-ride-share-platform:auth-service-latest
+            dockerprogram/mini-ride-share-platform:auth-service-${{ github.sha }}
+
+  build-rider:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and Push Rider Service
+        uses: docker/build-push-action@v5
+        with:
+          context: ./services/rider-service
+          push: true
+          tags: |
+            dockerprogram/mini-ride-share-platform:rider-service-latest
+            dockerprogram/mini-ride-share-platform:rider-service-${{ github.sha }}
