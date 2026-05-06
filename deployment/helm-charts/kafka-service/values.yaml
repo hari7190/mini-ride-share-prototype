@@ -17,20 +17,3 @@ resources:
     cpu: 500m
     memory: 512Mi
 replicaCount: 1
-
-image:
-  repository: bitnami/kafka
-  tag: 4.2.0
-  pullPolicy: IfNotPresent
-
-service:
-  type: ClusterIP
-  port: 9092
-
-resources:
-  requests:
-    cpu: 100m
-    memory: 256Mi
-  limits:
-    cpu: 500m
-    memory: 512Mi
