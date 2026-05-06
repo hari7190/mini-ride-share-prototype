@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: auth-service
+  name: rider-service
   namespace: argocd
 spec:
   project: mini-ride-share-platform
@@ -11,7 +11,7 @@ spec:
     path: deployment/helm-charts/base-service
     helm:
       valueFiles:
-        - values-auth-service.yaml
+        - values-rider-service.yaml
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: dev

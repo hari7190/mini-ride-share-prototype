@@ -84,3 +84,16 @@ Notes on troubleshooting this setup: [Debugging](docs/Debugging.md).
 Decisions :
 1. Not using Spring security AuthenticationManagement for the MVP
 2. Going with a shared secret on K8s for the jwt public key. Later move it into a JWKS endpoint on authservice and limit the public key to only one service. Need to think of trade offs there.
+
+## Shared Helm Chart (Auth + Rider)
+
+Use one reusable chart and pass service-specific values:
+
+- Chart path: `deployment/helm-charts/base-service`
+- Auth values: `deployment/helm-charts/base-service/values-auth-service.yaml`
+- Rider values: `deployment/helm-charts/base-service/values-rider-service.yaml`
+
+Example deploy commands:
+
+- `helm upgrade --install auth-service deployment/helm-charts/base-service -f deployment/helm-charts/base-service/values-auth-service.yaml -n dev`
+- `helm upgrade --install rider-service deployment/helm-charts/base-service -f deployment/helm-charts/base-service/values-rider-service.yaml -n dev`

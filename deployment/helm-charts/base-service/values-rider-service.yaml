@@ -1,0 +1,8 @@
+app:
+  name: rider-service
+  ingress:
+    name: rider-ingress
+    path: /api/rider
+
+image:
+  tag: rider-service-latest

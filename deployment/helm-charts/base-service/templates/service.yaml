@@ -1,0 +1,77 @@
+{{- if .Values.app.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.app.ingress.name }}
+  annotations:
+spec:
+  ingressClassName: {{ .Values.app.ingress.className }}
+  rules:
+    - http:
+        paths:
+          - path: {{ .Values.app.ingress.path }}
+            pathType: {{ .Values.app.ingress.pathType }}
+            backend:
+              service:
+                name: {{ .Values.app.name }}
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.app.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: {{ .Values.app.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+  type: {{ .Values.service.type }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.app.name }}
+spec:
+  revisionHistoryLimit: 3
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.name }}
+    spec:
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      containers:
+        - name: {{ .Values.app.name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+          env:
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-pass-secret
+                  key: password
+            - name: MYSQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-user-name
+                  key: username
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: secret
+            - name: JAVA_OPTS
+              value: "-Xms128m -Xmx256m -XX:MaxMetaspaceSize=128m"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://{{ .Values.env.MYSQL_HOST }}:{{ .Values.env.MYSQL_PORT }}/{{ .Values.env.MYSQL_DATABASE }}"

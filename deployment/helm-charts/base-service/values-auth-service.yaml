@@ -1,0 +1,8 @@
+app:
+  name: auth-service
+  ingress:
+    name: auth-ingress
+    path: /api/auth
+
+image:
+  tag: auth-service-latest

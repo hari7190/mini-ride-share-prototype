@@ -1,0 +1,30 @@
+replicaCount: 1
+
+app:
+  name: service
+  ingress:
+    enabled: true
+    name: service-ingress
+    className: nginx
+    path: /api/service
+    pathType: Prefix
+
+image:
+  repository: dockerprogram/mini-ride-share-platform
+  tag: latest
+  pullPolicy: Always
+
+imagePullSecrets:
+  - name: dockerhubcredentials
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+namespace: dev
+
+env:
+  MYSQL_PORT: "3306"
+  MYSQL_DATABASE: "ride_share_db"
+  MYSQL_HOST: "mysql-dev-mysql"
