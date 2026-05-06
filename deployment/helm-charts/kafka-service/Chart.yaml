@@ -1,0 +1,6 @@
+apiVersion: v2
+name: kafka-service
+description: A Helm chart for Kafka service for the mini ride share platform
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

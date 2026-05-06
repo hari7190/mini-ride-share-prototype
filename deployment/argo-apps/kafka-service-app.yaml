@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kafka-service
+  namespace: argocd
+spec:
+  project: mini-ride-share-platform
+  source:
+    repoURL: https://github.com/hari7190/mini-ride-share-prototype.git
+    targetRevision: HEAD
+    path: deployment/helm-charts/kafka-service
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
