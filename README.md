@@ -13,7 +13,7 @@ It covers the full flow:
 - using Redis for fast lookups, and 
 - adding Python jobs for background processing/analytics.
 
-Then I deploy everything on **Kubernetes** and manage releases the **GitOps** way with ArgoCD on a **Bare-Metal cluster**. Also, I will be adding Terraform for provisioning clusters in GCP and AWS to deploy this app. 
+Then I deploy everything on **Kubernetes** and manage releases the **GitOps** way with ArgoCD on a **Bare-Metal cluster**. Also, I will be adding **Terraform** for provisioning clusters in *GCP* and *AWS* to deploy this app. 
 
 Hardware - R720 PowerEdge Server x 4 (From my **Homelab**)
 
