@@ -1,0 +1,18 @@
+replicaCount: 1
+
+image:
+  repository: dockerprogram/mini-ride-share-platform
+  tag: rider-service-latest
+  pullPolicy: Always
+
+imagePullSecrets:
+  - name: dockerhubcredentials
+
+service:
+  type: ClusterIP
+  port: 8080
+
+env:
+  MYSQL_PORT: "3306"
+  MYSQL_DATABASE: "ride_share_db"
+  MYSQL_HOST: "mysql-dev-mysql" # This needs to be fixed to be flexible for different environments
