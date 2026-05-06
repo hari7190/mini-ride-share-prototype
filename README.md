@@ -79,6 +79,8 @@ Notes on troubleshooting this setup: [Debugging](docs/Debugging.md).
 
 1. Move DTOs into a depedency model.
 2. Move to a shared/overlayed Helm chart method since I have more services now.
+3. Validating Admission Controllers
+4. Create cursor skills for auto linting
 
 
 Decisions :
