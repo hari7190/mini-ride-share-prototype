@@ -37,7 +37,7 @@ You can think of it as a “real-world-ish” demo project that proves I can des
 ![ArgoCD](docs/images/argo-cd.png)
 
 ## Github Actions
-![Github Actions](docs/images/argo-cd.png)
+![Github Actions](docs/images/github-actions-build.png)
 
 ---
 
