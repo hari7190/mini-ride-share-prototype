@@ -29,3 +29,6 @@ auth-ingress   nginx   *       192.168.xx.xxx   80      10h
 3. Lost the ingressClass name "nginx" which is supposed to point to "k8s.io/ingress-nginx" controller. Create a definition as seen on deployment/manifests/ingress-class.yaml. - Need to investigate why it is lost. I suspect this was a result of removing the native ingress controller of microk8s in favor of official nginx ingress controller.
 symptom - On calling auth-service, it throws a 404 at nginx level.
 4. With no Validating Admission Controllers, I used same name for two ingresses and now the first app is inaccessible.
+5. I encountered a synchronization gap where the Kubernetes API showed the correct desired state, but the Data Plane (Nginx) was still routing to stale Pod IPs. I verified that the Helm charts and manifests were correct. After confirming the port mapping was accurate, I identified that the Nginx Controller's internal state had diverged from the cluster state. I performed a rollout restart to restore service immediately, but then investigated the controller logs to see why the reload event wasn't processed. This highlighted the importance of having proper observability—specifically monitoring reload success metrics—to ensure the ingress layer remains consistent with the service mesh.
+> kubectl rollout restart deployment -n ingress-nginx ingress-nginx-controller
+
