@@ -34,7 +34,10 @@ You can think of it as a “real-world-ish” demo project that proves I can des
 ![Architecture diagram](docs/images/arch-diagram.drawio.svg)
 
 ## Argo CD
-![Argo CD](docs/images/argo-cd.png)
+![ArgoCD](docs/images/argo-cd.png)
+
+## Github Actions
+![Github Actions](docs/images/argo-cd.png)
 
 ---
 

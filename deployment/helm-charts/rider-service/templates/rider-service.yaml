@@ -26,8 +26,8 @@ spec:
     app: rider-service  
   ports:
     - protocol: TCP
-      port: 8080
-      targetPort: 8080
+      port: 8081
+      targetPort: 8081
   type: ClusterIP
 ---
 apiVersion: apps/v1
