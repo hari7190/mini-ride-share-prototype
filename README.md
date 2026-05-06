@@ -78,6 +78,7 @@ Notes on troubleshooting this setup: [Debugging](docs/Debugging.md).
 ## To Do
 
 1. Move DTOs into a depedency model.
+2. Move to a shared/overlayed Helm chart method since I have more services now.
 
 
 Decisions :
