@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/hari7190/mini-ride-share-prototype.git
     targetRevision: HEAD
-    path: deployment/helm-charts/auth-service 
+    path: deployment/helm-charts/auth-service
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: dev
