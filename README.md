@@ -84,8 +84,12 @@ Notes on troubleshooting this setup: [Debugging](docs/Debugging.md).
 2. Move to a shared/overlayed Helm chart method since I have more services now.
 3. Validating Admission Controllers
 4. Create cursor skills for auto linting
+5. Move Kafka to strimzi version.
+6. Deploy an cache for images/dependencies etc.
 
 
 Decisions :
 1. Not using Spring security AuthenticationManagement for the MVP
 2. Going with a shared secret on K8s for the jwt public key. Later move it into a JWKS endpoint on authservice and limit the public key to only one service. Need to think of trade offs there.
+3. Not using an umbrella chart method and instead create a argo-cd app pointed at bitnami chart for Kafka. 
+4. Not using a image cache like Nexus/Artifactory.
