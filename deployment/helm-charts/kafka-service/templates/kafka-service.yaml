@@ -58,6 +58,12 @@ spec:
               value: "MDEyMzQ1Njc4OTAxMjM0NQ"
             - name: KAFKA_HEAP_OPTS
               value: "-Xmx256M -Xms256M"
+            - name: BITNAMI_DEBUG
+              value: "true"  # This will show the ACTUAL error during formatting
+            - name: KAFKA_CFG_LOG_DIRS
+              value: "/bitnami/kafka/data"
+            - name: KAFKA_SKIP_KRAFT_STORAGE_CHECK
+              value: "no"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
