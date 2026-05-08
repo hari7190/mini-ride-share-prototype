@@ -63,6 +63,12 @@ spec:
               value: "-Xmx256M -Xms256M"
             - name: ALLOW_PLAINTEXT_LISTENER
               value: "yes"
+
+            # 5. Debug
+            - name: BITNAMI_DEBUG
+              value: "true"
+            - name: KAFKA_SKIP_KRAFT_STORAGE_CHECK
+              value: "no"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
