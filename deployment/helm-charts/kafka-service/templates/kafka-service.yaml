@@ -45,8 +45,6 @@ spec:
               value: "broker,controller"
               
             # 2. The "Dual-Mode" Fix (Satisfies both the script and the Java parser)
-            - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
-              value: "1@127.0.0.1:9093"
             
             # This is the "Magic String" for Kafka 3.7+ 
             # Format: ID @ HOST : PORT : DIRECTORY_ID
