@@ -56,5 +56,13 @@ spec:
               value: "1@localhost:9093"
             - name: KAFKA_KRAFT_CLUSTER_ID
               value: "MDEyMzQ1Njc4OTAxMjM0NQ"
+            - name: KAFKA_HEAP_OPTS
+              value: "-Xmx256M -Xms256M"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: kafka-data
+              mountPath: /bitnami/kafka
+      volumes:
+        - name: kafka-data
+          emptyDir: {}
