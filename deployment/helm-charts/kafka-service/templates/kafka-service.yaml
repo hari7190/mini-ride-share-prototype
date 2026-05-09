@@ -122,6 +122,8 @@ spec:
               value: {{ .Values.kafka.bootstrapServers }}
             - name: KAFKA_CLUSTERS_0_METRICS_PORT
               value: "9997"
+            - name: SERVER_SERVLET_CONTEXT_PATH
+              value: "/kafka-ui"
       volumes:
         - name: kafka-data
           emptyDir: {}
