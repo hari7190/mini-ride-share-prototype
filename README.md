@@ -31,7 +31,7 @@ You can think of it as a “real-world-ish” demo project that proves I can des
 ---
 ## Diagrams & Screenshots
 
-![Architecture diagram](docs/images/arch-diagram.drawio.svg)
+![Architecture diagram](docs/images/arch-diagram.svg)
 
 ## Argo CD
 ![ArgoCD](docs/images/argo-cd.png)
