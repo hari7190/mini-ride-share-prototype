@@ -19,6 +19,15 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
 
+app:
+  kafka:
+    topics:
+      ride-requests: ride-requests.v1
+    events:
+      ride-requested:
+        type: RIDE_REQUESTED
+        version: "1"
+
 jwt:
   secret: ${JWT_SECRET}
   expiration: 86400000 # 24 hours in milliseconds
