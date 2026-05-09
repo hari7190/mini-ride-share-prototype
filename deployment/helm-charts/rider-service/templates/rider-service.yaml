@@ -72,3 +72,5 @@ spec:
               value: "-Xms128m -Xmx256m -XX:MaxMetaspaceSize=128m" # optimzing memory usage
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:mysql://{{  .Values.env.MYSQL_HOST}}:{{ .Values.env.MYSQL_PORT }}/{{ .Values.env.MYSQL_DATABASE }}"
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: {{ .Values.kafka.bootstrapServers }} # TODO: make this dynamic
