@@ -13,6 +13,37 @@ spec:
       targetPort: {{ .Values.service.port }}
   type: {{ .Values.service.type }}
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-ui-service
+  namespace: dev
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: kafka-service
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kafka-ui-ingress
+  namespace: dev
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /kafka-ui
+        pathType: Prefix
+        backend:
+          service:
+            name: kafka-ui-service
+            port:
+              number: 8080
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -80,6 +111,19 @@ spec:
           volumeMounts:
             - name: kafka-data
               mountPath: /bitnami/kafka
+        - name: kafka-ui
+          image: provectuslabs/kafka-ui:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: KAFKA_CLUSTERS_0_NAME
+              value: "local-dev"
+            - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+              value: {{ .Values.kafka.bootstrapServers }}
+            - name: KAFKA_CLUSTERS_0_METRICS_PORT
+              value: "9997"
+            - name: SERVER_SERVLET_CONTEXT_PATH
+              value: "/kafka-ui"
       volumes:
         - name: kafka-data
           emptyDir: {}

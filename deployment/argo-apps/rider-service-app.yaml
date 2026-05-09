@@ -7,7 +7,7 @@ spec:
   project: mini-ride-share-platform
   source:
     repoURL: https://github.com/hari7190/mini-ride-share-prototype.git
-    targetRevision: HEAD
+    targetRevision: rider-service-implementation
     path: deployment/helm-charts/rider-service
   destination:
     server: 'https://kubernetes.default.svc'
