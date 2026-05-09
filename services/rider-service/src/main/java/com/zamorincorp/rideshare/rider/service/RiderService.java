@@ -6,12 +6,16 @@ import com.zamorincorp.rideshare.rider.entity.Trip;
 import com.zamorincorp.rideshare.rider.dto.RideRequestDTO;
 import com.zamorincorp.rideshare.rider.entity.TripStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 
 @Service
 public class RiderService {
 
     @Autowired
     private TripRepository tripRepository;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     //create createRideRequest method
     public Trip createRideRequest(RideRequestDTO rideRequestDTO, String riderId) {
@@ -23,6 +27,11 @@ public class RiderService {
         trip.setStatus(TripStatus.PENDING);
 
         // 2. Save the trip to the database
-        return tripRepository.save(trip);
+        Trip saved = tripRepository.save(trip);
+
+        // 3. Send the trip to the Kafka topic
+        kafkaTemplate.send("ride-requests", saved.toString());
+
+        return saved;
     }
 }
