@@ -7,12 +7,36 @@ import com.zamorincorp.rideshare.dispatch.entity.RideDispatch;
 import com.zamorincorp.rideshare.dispatch.entity.DispatchStatus;
 import com.zamorincorp.rideshare.dispatch.repository.RideDispatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
+import com.zamorincorp.rideshare.dispatch.dto.RideDispatchEvent;
+import java.time.LocalDateTime;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 @Slf4j
 public class DispatchService {
     @Autowired
     private RideDispatchRepository rideDispatchRepository;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Value("${app.kafka.topics.ride-dispatch}")
+    private String rideRequestsTopic;
+
+    @Value("${app.kafka.events.ride-dispatch.type}")
+    private String rideDispatchEventType;
+
+    @Value("${app.kafka.events.ride-dispatch.version}")
+    private String rideDispatchEventVersion;
 
     public void handleRideRequested(RideRequestedEvent event) {
         log.info(
@@ -40,16 +64,36 @@ public class DispatchService {
         // 2. Update the ride dispatch record with the driver id
         rideDispatch.setDriverId(driverId);
         rideDispatch.setStatus(DispatchStatus.MATCHED);
-        rideDispatchRepository.save(rideDispatch);
+        RideDispatch saved = rideDispatchRepository.save(rideDispatch);
 
         log.info("Ride dispatch updated for tripId={} riderId={} driverId={}", event.tripId(), event.riderId(), driverId);
 
-        // 3. Publish a ride matched event
-        RideMatchedEvent rideMatchedEvent = new RideMatchedEvent(
+        // 3. Publish a ride dispatch event
+        RideDispatchEvent rideDispatchEvent = new RideDispatchEvent(
             event.tripId(),
             event.riderId(),
-            driverId
+            driverId,
+            DispatchStatus.MATCHED,
+            LocalDateTime.now(),
+            LocalDateTime.now()
         );
-        kafkaTemplate.send(rideMatchedEvent);
+
+        String payload;
+        try {
+            payload = objectMapper.writeValueAsString(rideDispatchEvent);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Could not serialize ride dispatch event", e);
+        }
+
+        Message<String> eventMessage = MessageBuilder.withPayload(payload)
+        .setHeader(KafkaHeaders.TOPIC, rideRequestsTopic)
+        .setHeader(KafkaHeaders.KEY, saved.getId().toString())
+        .setHeader("eventType", rideDispatchEventType)
+        .setHeader("eventVersion", rideDispatchEventVersion)
+        .build();
+
+        kafkaTemplate.send(eventMessage);
+
+        log.info("Ride dispatch event published for tripId={} riderId={} driverId={}", event.tripId(), event.riderId(), driverId);
     }
 }

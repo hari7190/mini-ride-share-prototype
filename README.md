@@ -3,7 +3,7 @@
 *This doc will be updated as I progress through implementation*
 
 
-This project is a small ride-share style app I built to practice and demo that I can take something from idea to production-ish setup.
+This project is a small ride-share style app I'm building to practice and demo that I can take something from idea to production-ish setup.
 
 It covers the full flow: 
 
