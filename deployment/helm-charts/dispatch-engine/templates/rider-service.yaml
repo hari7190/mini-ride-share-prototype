@@ -1,0 +1,76 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dispatch-engine-ingress
+  annotations:
+spec:
+  ingressClassName: nginx 
+  rules:
+  - http:
+      paths:
+      - path: /api/dispatch-engine
+        pathType: Prefix
+        backend:
+          service:
+            name: dispatch-engine-service
+            port:
+              number: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dispatch-engine-service
+  namespace: dev
+spec:
+  selector:
+    app: dispatch-engine-service  
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-dispatch-engine-service
+spec:
+  revisionHistoryLimit: 3
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: dispatch-engine-service
+  template:
+    metadata:
+      labels:
+        app: dispatch-engine-service
+    spec:
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      containers:
+        - name: dispatch-engine-service
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-pass-secret 
+                  key: password
+            - name: MYSQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-user-name
+                  key: username
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: secret
+            - name: JAVA_OPTS
+              value: "-Xms128m -Xmx256m -XX:MaxMetaspaceSize=128m" # optimzing memory usage
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://{{  .Values.env.MYSQL_HOST}}:{{ .Values.env.MYSQL_PORT }}/{{ .Values.env.MYSQL_DATABASE }}"
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: {{ .Values.kafka.bootstrapServers }} # TODO: make this dynamic

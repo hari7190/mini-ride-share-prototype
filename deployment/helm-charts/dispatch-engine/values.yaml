@@ -1,0 +1,21 @@
+replicaCount: 1
+
+image:
+  repository: dockerprogram/mini-ride-share-platform
+  tag: dispatch-engine-latest
+  pullPolicy: Always
+
+imagePullSecrets:
+  - name: dockerhubcredentials
+
+service:
+  type: ClusterIP
+  port: 8080
+
+kafka:
+  bootstrapServers: "kafka-service.dev.svc.cluster.local:9092"
+
+env:
+  MYSQL_PORT: "3306"
+  MYSQL_DATABASE: "ride_share_db"
+  MYSQL_HOST: "mysql-dev-mysql" # This needs to be fixed to be flexible for different environments

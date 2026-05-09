@@ -6,6 +6,7 @@ on:
     paths:
       - 'services/auth-service/**'
       - 'services/rider-service/**'
+      - 'services/dispatch-engine/**'
 
 jobs:
   # This job detects what actually changed
@@ -64,3 +65,23 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_IMAGE_REPO }}:rider-service-latest
             ${{ secrets.DOCKER_IMAGE_REPO }}:rider-service-${{ github.sha }}
+
+  build-dispatch:
+    needs: changes
+    if: ${{ needs.changes.outputs.dispatch == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and Push Dispatch Engine
+        uses: docker/build-push-action@v5
+        with:
+          context: ./services/dispatch-engine
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_IMAGE_REPO }}:dispatch-engine-latest
+            ${{ secrets.DOCKER_IMAGE_REPO }}:dispatch-engine-${{ github.sha }}
