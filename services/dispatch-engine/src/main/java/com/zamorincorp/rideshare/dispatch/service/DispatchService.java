@@ -7,6 +7,7 @@ import com.zamorincorp.rideshare.dispatch.entity.RideDispatch;
 import com.zamorincorp.rideshare.dispatch.entity.DispatchStatus;
 import com.zamorincorp.rideshare.dispatch.repository.RideDispatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.core.KafkaTemplate;
 import com.zamorincorp.rideshare.dispatch.dto.RideDispatchEvent;
 import java.time.LocalDateTime;
@@ -40,38 +41,55 @@ public class DispatchService {
 
     public void handleRideRequested(RideRequestedEvent event) {
         log.info(
-                "Dispatch received ride request: tripId={} riderId={} pickup={} destination={} type={} version={}",
-                event.tripId(),
-                event.riderId(),
-                event.pickupLocation(),
-                event.destination(),
-                event.eventType(),
-                event.eventVersion());
-        
+            "Dispatch received ride request: tripId={} riderId={} pickup={} destination={} type={} version={}",
+            event.tripId(),
+            event.riderId(),
+            event.pickupLocation(),
+            event.destination(),
+            event.eventType(),
+            event.eventVersion());
+
         // 1. Create a new ride dispatch record
         RideDispatch rideDispatch = new RideDispatch();
         rideDispatch.setTripId(event.tripId());
         rideDispatch.setRiderId(event.riderId());
         rideDispatch.setStatus(DispatchStatus.SEARCHING);
+            
         rideDispatchRepository.save(rideDispatch);
-
         log.info("Ride dispatch created for tripId={} riderId={}", event.tripId(), event.riderId());
-    
+        
         // Mock matching logic
-
-        String driverId = "driver123";
+        String driverId = findMatchingDriver(event.pickupLocation(), event.destination());
 
         // 2. Update the ride dispatch record with the driver id
-        rideDispatch.setDriverId(driverId);
-        rideDispatch.setStatus(DispatchStatus.MATCHED);
-        RideDispatch saved = rideDispatchRepository.save(rideDispatch);
+        if (driverId != null) {
+            rideDispatch.setDriverId(driverId);
+            rideDispatch.setStatus(DispatchStatus.MATCHED);
+            RideDispatch saved = rideDispatchRepository.save(rideDispatch);
 
-        log.info("Ride dispatch updated for tripId={} riderId={} driverId={}", event.tripId(), event.riderId(), driverId);
+            log.info("Ride dispatch updated for tripId={} riderId={} driverId={}", event.tripId(), event.riderId(), driverId);
 
-        // 3. Publish a ride dispatch event
+            // 3. Publish a ride dispatch event
+            publishRideDispatchEvent(event.tripId(), event.riderId(), driverId, DispatchStatus.MATCHED, saved);
+
+            log.info("Ride dispatch event published for tripId={} riderId={} driverId={}", event.tripId(), event.riderId(), driverId);
+        } else {
+            rideDispatch.setStatus(DispatchStatus.FAILED);
+            rideDispatchRepository.save(rideDispatch);
+            log.info("No matching driver found for tripId={} riderId={}", event.tripId(), event.riderId());
+        }
+    }
+
+    private String findMatchingDriver(String pickupLocation, String destination) {
+        return "driver123";
+    }
+
+    // TODO: Add a retry mechanism for the Kafka send
+    private void publishRideDispatchEvent(Long tripId, String riderId, String driverId, DispatchStatus status, RideDispatch saved) {
+
         RideDispatchEvent rideDispatchEvent = new RideDispatchEvent(
-            event.tripId(),
-            event.riderId(),
+            tripId,
+            riderId,
             driverId,
             DispatchStatus.MATCHED,
             LocalDateTime.now(),
@@ -85,6 +103,7 @@ public class DispatchService {
             throw new IllegalStateException("Could not serialize ride dispatch event", e);
         }
 
+        try {
         Message<String> eventMessage = MessageBuilder.withPayload(payload)
         .setHeader(KafkaHeaders.TOPIC, rideRequestsTopic)
         .setHeader(KafkaHeaders.KEY, saved.getId().toString())
@@ -93,7 +112,10 @@ public class DispatchService {
         .build();
 
         kafkaTemplate.send(eventMessage);
-
-        log.info("Ride dispatch event published for tripId={} riderId={} driverId={}", event.tripId(), event.riderId(), driverId);
+        } catch (KafkaException e) {
+            log.error("Error sending ride dispatch event for tripId={} riderId={} driverId={}", tripId, riderId, driverId, e);
+            throw new IllegalStateException("Could not send ride dispatch event", e);
+        }
     }
+
 }
