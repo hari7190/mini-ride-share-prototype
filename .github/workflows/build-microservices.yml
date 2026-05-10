@@ -25,6 +25,8 @@ jobs:
               - 'services/auth-service/**'
             rider:
               - 'services/rider-service/**'
+            dispatch:
+              - 'services/dispatch-engine/**'
 
   build-auth:
     needs: changes
