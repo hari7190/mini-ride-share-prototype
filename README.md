@@ -1,6 +1,6 @@
 # Mini Ride-Share Platform (Spring Boot + Kafka + K8s)
 
-*This doc will be updated as I progress through implementation*
+*This doc will be updated as I progress through implementation. I'm going for an MVP implementation first, and then pivot to optimizing and refactoring. Initial focus is on getting my local infra setup.*
 
 
 This project is a small ride-share style app I'm building to practice and demo that I can take something from idea to production-ish setup.
