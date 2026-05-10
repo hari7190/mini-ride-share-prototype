@@ -15,6 +15,7 @@ jobs:
     outputs:
       auth: ${{ steps.filter.outputs.auth }}
       rider: ${{ steps.filter.outputs.rider }}
+      dispatch: ${{ steps.filter.outputs.dispatch }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
