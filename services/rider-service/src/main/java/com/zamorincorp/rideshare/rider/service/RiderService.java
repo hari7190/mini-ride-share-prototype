@@ -16,8 +16,10 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class RiderService {
     @Autowired
     private TripRepository tripRepository;
@@ -39,6 +41,10 @@ public class RiderService {
 
     //create createRideRequest method
     public Trip createRideRequest(RideRequestDTO rideRequestDTO, String riderId) {
+
+        log.info("Creating ride request for riderId={} pickupLocation={} destination={}"
+        , riderId, rideRequestDTO.getPickupLocation(), rideRequestDTO.getDestination());
+
         // 1. Convert DTO to Model (Mapping)
         Trip trip = new Trip();
         trip.setRiderId(riderId);
