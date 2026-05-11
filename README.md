@@ -1,7 +1,10 @@
 # Mini Ride-Share Platform (Spring Boot + Kafka + K8s)
 
-*This doc will be updated as I progress through implementation. I'm going for an MVP implementation first, and then pivot to optimizing and refactoring. Initial focus is on getting my local infra setup.*
+*This doc will be updated as I progress through implementation.*
 
+*I'm going for an MVP implementation first, and then pivot to optimizing and refactoring. Initial focus is on getting my local infra setup (Helm/k8s/Github Actions) and barebone decoupled microservices and inter-service communication. Once that is done, I will move to resilience, fault tolerance and optimization aspects.*
+
+## Project Summary
 
 This project is a small ride-share style app I'm building to practice and demo that I can take something from idea to production-ish setup.
 
@@ -9,9 +12,10 @@ It covers the full flow:
 
 - writing backend services in Java/Spring Boot, 
 - wiring async events with Kafka, 
-- storing core data in MySQL, 
-- using Redis for fast lookups, and 
-- adding Python jobs for background processing/analytics.
+- storing core data in MySQL,
+- write a location matching algorithm
+- using Redis for fast lookups, and
+- Finish with some Go components
 
 Then I deploy everything on **Kubernetes** and manage releases the **GitOps** way with ArgoCD on a **Bare-Metal cluster**. Also, I will be adding **Terraform** for provisioning clusters in *GCP* and *AWS* to deploy this app. 
 
