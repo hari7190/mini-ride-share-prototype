@@ -7,6 +7,7 @@ on:
       - 'services/auth-service/**'
       - 'services/rider-service/**'
       - 'services/dispatch-engine/**'
+      - 'services/driver-service/**'
 
 jobs:
   # This job detects what actually changed
@@ -16,6 +17,7 @@ jobs:
       auth: ${{ steps.filter.outputs.auth }}
       rider: ${{ steps.filter.outputs.rider }}
       dispatch: ${{ steps.filter.outputs.dispatch }}
+      driver: ${{ steps.filter.outputs.driver }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -28,6 +30,8 @@ jobs:
               - 'services/rider-service/**'
             dispatch:
               - 'services/dispatch-engine/**'
+            driver:
+              - 'services/driver-service/**'
 
   build-auth:
     needs: changes
@@ -88,3 +92,23 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_IMAGE_REPO }}:dispatch-engine-latest
             ${{ secrets.DOCKER_IMAGE_REPO }}:dispatch-engine-${{ github.sha }}
+
+  build-driver:
+    needs: changes
+    if: ${{ needs.changes.outputs.driver == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and Push Driver Service
+        uses: docker/build-push-action@v5
+        with:
+          context: ./services/driver-service
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_IMAGE_REPO }}:driver-service-latest
+            ${{ secrets.DOCKER_IMAGE_REPO }}:driver-service-${{ github.sha }}
