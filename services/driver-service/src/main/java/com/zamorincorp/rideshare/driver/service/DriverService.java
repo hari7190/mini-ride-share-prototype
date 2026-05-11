@@ -17,7 +17,6 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.kafka.support.KafkaHeaders;
 import com.zamorincorp.rideshare.driver.dto.UserCreatedEvent;
-import com.zamorincorp.rideshare.driver.entity.DriverStatus;
 
 @Service
 @Slf4j

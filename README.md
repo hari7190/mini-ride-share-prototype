@@ -90,6 +90,8 @@ Notes on troubleshooting this setup: [Debugging](docs/Debugging.md).
 4. Create cursor skills for auto linting
 5. Move Kafka to strimzi version.
 6. Deploy an cache for images/dependencies etc.
+7. Move the base images for deployment to minimal distroless images.
+8. Add caching into Github actions for quicker build times.
 
 
 Decisions :
@@ -98,3 +100,4 @@ Decisions :
 3. Not using an umbrella chart method and instead create a argo-cd app pointed at bitnami chart for Kafka. 
 4. Not using a image cache like Nexus/Artifactory.
 5. Not using Transactional Outbox Pattern till I finish the basics
+
