@@ -28,7 +28,7 @@ app:
   kafka:
     topics:
       ride-requests: ride-requests.v1
-      ride-dispatch: ride-dispatch.v1
+      ride-dispatch: driver-assigned.v1
     events:
       ride-requested:
         type: com.zamorincorp.rideshare.dispatch.dto.RideRequestedEvent

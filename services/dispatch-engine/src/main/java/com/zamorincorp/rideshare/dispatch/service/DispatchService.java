@@ -70,7 +70,7 @@ public class DispatchService {
             log.info("Ride dispatch updated for tripId={} riderId={} driverId={}", event.tripId(), event.riderId(), driverId);
 
             // 3. Publish a ride dispatch event
-            publishRideDispatchEvent(event.tripId(), event.riderId(), driverId, DispatchStatus.MATCHED, saved);
+            publishDriverAssignedEvent(event.tripId(), event.riderId(), driverId, event.pickupLocation(), event.destination(), saved);
 
             log.info("Ride dispatch event published for tripId={} riderId={} driverId={}", event.tripId(), event.riderId(), driverId);
         } else {
@@ -85,13 +85,14 @@ public class DispatchService {
     }
 
     // TODO: Add a retry mechanism for the Kafka send
-    private void publishRideDispatchEvent(Long tripId, String riderId, String driverId, DispatchStatus status, RideDispatch saved) {
+    private void publishDriverAssignedEvent(Long tripId, String riderId, String driverId, String pickupLocation, String destination, RideDispatch saved) {
 
         RideDispatchEvent rideDispatchEvent = new RideDispatchEvent(
             tripId,
             riderId,
             driverId,
-            DispatchStatus.MATCHED,
+            pickupLocation, //So that driver-service dont' have to call back immediately.
+            destination,
             LocalDateTime.now(),
             LocalDateTime.now()
         );
