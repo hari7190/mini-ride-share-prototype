@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.zamorincorp.rideshare.auth.security.JwtProvider;
 import java.util.Map;
+import com.zamorincorp.rideshare.auth.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -19,11 +21,13 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/register")
     public String register(@RequestBody User user) {
-        // Hash the password before saving!
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        //call user service to create user
+        userService.createUser(user);
         return "User registered successfully!";
     }
 

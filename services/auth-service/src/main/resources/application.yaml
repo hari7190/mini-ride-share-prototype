@@ -8,6 +8,18 @@ spring:
     password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: auth-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+    
+
   jpa:
     hibernate:
       ddl-auto: update # Automatically creates the 'users' table based on your Entity
@@ -19,3 +31,12 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
   expiration: 86400000 # 24 hours in milliseconds
+
+app:
+  kafka:
+    topics:
+      user-created: user-created.v1
+    events:
+      user-created:
+        type: com.zamorincorp.rideshare.auth.dto.UserCreatedEvent
+        version: 1.0.0
