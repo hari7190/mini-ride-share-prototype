@@ -40,7 +40,7 @@ public class RiderController {
             Trip savedTrip = riderService.createRideRequest(rideRequestDTO, riderId);
 
             // 4. Return the saved trip with a 201 Created status
-            return new ResponseEntity<>(savedTrip, HttpStatus.CREATED);
+            return new ResponseEntity<>(savedTrip.getId(), HttpStatus.CREATED);
 
         } catch (Exception e) {
             // Basic error handling for your prototype
