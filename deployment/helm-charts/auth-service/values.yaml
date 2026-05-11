@@ -12,6 +12,9 @@ service:
   type: ClusterIP
   port: 8080
 
+kafka:
+  bootstrapServers: "kafka-service.dev.svc.cluster.local:9092"
+
 env:
   MYSQL_PORT: "3306"
   MYSQL_DATABASE: "ride_share_db"
