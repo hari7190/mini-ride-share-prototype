@@ -15,15 +15,24 @@ spring:
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: rider-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
 
 app:
   kafka:
     topics:
       ride-requests: ride-requests.v1
+      driver-assigned: driver-assigned.v1
     events:
       ride-requested:
-        type: RIDE_REQUESTED
+        type: com.zamorincorp.rideshare.rider.dto.RideRequestedEventDTO
         version: "1"
+      driver-assigned:
+        type: com.zamorincorp.rideshare.rider.dto.DriverAssignedEventDTO
+        version: 1.0.0
 
 jwt:
   secret: ${JWT_SECRET}
