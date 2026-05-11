@@ -9,20 +9,48 @@ on:
       - 'services/dispatch-engine/**'
       - 'services/driver-service/**'
       - 'services/location-tracker/**'
+  workflow_dispatch:
+    inputs:
+      auth:
+        description: "Build and push auth service"
+        type: boolean
+        required: false
+        default: false
+      rider:
+        description: "Build and push rider service"
+        type: boolean
+        required: false
+        default: false
+      dispatch:
+        description: "Build and push dispatch engine"
+        type: boolean
+        required: false
+        default: false
+      driver:
+        description: "Build and push driver service"
+        type: boolean
+        required: false
+        default: false
+      location_tracker:
+        description: "Build and push location tracker"
+        type: boolean
+        required: false
+        default: false
 
 jobs:
-  # This job detects what actually changed
+  # Push: path filter only. workflow_dispatch: manual inputs only (paths ignored).
   changes:
     runs-on: ubuntu-latest
     outputs:
-      auth: ${{ steps.filter.outputs.auth }}
-      rider: ${{ steps.filter.outputs.rider }}
-      dispatch: ${{ steps.filter.outputs.dispatch }}
-      driver: ${{ steps.filter.outputs.driver }}
-      location_tracker: ${{ steps.filter.outputs.location_tracker }}
+      auth: ${{ steps.select.outputs.auth }}
+      rider: ${{ steps.select.outputs.rider }}
+      dispatch: ${{ steps.select.outputs.dispatch }}
+      driver: ${{ steps.select.outputs.driver }}
+      location_tracker: ${{ steps.select.outputs.location_tracker }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
+        if: github.event_name == 'push'
         id: filter
         with:
           filters: |
@@ -36,6 +64,22 @@ jobs:
               - 'services/driver-service/**'
             location_tracker:
               - 'services/location-tracker/**'
+      - name: Select services to build
+        id: select
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "auth=${{ inputs.auth }}" >> "$GITHUB_OUTPUT"
+            echo "rider=${{ inputs.rider }}" >> "$GITHUB_OUTPUT"
+            echo "dispatch=${{ inputs.dispatch }}" >> "$GITHUB_OUTPUT"
+            echo "driver=${{ inputs.driver }}" >> "$GITHUB_OUTPUT"
+            echo "location_tracker=${{ inputs.location_tracker }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "auth=${{ steps.filter.outputs.auth }}" >> "$GITHUB_OUTPUT"
+            echo "rider=${{ steps.filter.outputs.rider }}" >> "$GITHUB_OUTPUT"
+            echo "dispatch=${{ steps.filter.outputs.dispatch }}" >> "$GITHUB_OUTPUT"
+            echo "driver=${{ steps.filter.outputs.driver }}" >> "$GITHUB_OUTPUT"
+            echo "location_tracker=${{ steps.filter.outputs.location_tracker }}" >> "$GITHUB_OUTPUT"
+          fi
 
   build-auth:
     needs: changes
