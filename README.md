@@ -93,3 +93,4 @@ Decisions :
 2. Going with a shared secret on K8s for the jwt public key. Later move it into a JWKS endpoint on authservice and limit the public key to only one service. Need to think of trade offs there.
 3. Not using an umbrella chart method and instead create a argo-cd app pointed at bitnami chart for Kafka. 
 4. Not using a image cache like Nexus/Artifactory.
+5. Not using Transactional Outbox Pattern till I finish the basics
