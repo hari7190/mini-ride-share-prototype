@@ -29,6 +29,7 @@ app:
     topics:
       driver-assigned: driver-assigned.v1
       ride-accepted: ride-accepted.v1
+      user-created: user-created.v1
     events:
       driver-assigned:
         type: com.zamorincorp.rideshare.driver.dto.DriverAssignedEvent

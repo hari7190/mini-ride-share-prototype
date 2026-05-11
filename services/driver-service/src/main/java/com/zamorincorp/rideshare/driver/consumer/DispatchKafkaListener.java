@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zamorincorp.rideshare.driver.dto.RideDispatchEvent;
 import com.zamorincorp.rideshare.driver.service.DriverService;
+import com.zamorincorp.rideshare.driver.dto.UserCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +23,16 @@ public class DispatchKafkaListener {
             driverService.handleDriverAssigned(event);
         } catch (Exception e) {
             log.error("Failed to process driver assigned message payload={}", payload, e);
+        }
+    }
+
+    @KafkaListener(topics = "${app.kafka.topics.user-created}")
+    public void onUserCreated(String payload) {
+        try {
+            UserCreatedEvent event = objectMapper.readValue(payload, UserCreatedEvent.class);
+            driverService.handleUserCreated(event);
+        } catch (Exception e) {
+            log.error("Failed to process user created message payload={}", payload, e);
         }
     }
 }

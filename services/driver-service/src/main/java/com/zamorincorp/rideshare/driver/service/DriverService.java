@@ -16,6 +16,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.kafka.support.KafkaHeaders;
+import com.zamorincorp.rideshare.driver.dto.UserCreatedEvent;
+import com.zamorincorp.rideshare.driver.entity.DriverStatus;
 
 @Service
 @Slf4j
@@ -23,6 +25,7 @@ public class DriverService {
 
     @Autowired
     private DriverRepository driverRepository;
+    
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -78,5 +81,25 @@ public class DriverService {
         log.info("Ride accepted event sent for tripId={} riderId={} driverId={}", event.tripId(), event.riderId(), event.driverId());
     }
 
-    
+    public void handleUserCreated(UserCreatedEvent event) {
+        log.info("Handling user created event: userId={} username={} role={}", event.userId(), event.username(), event.role());
+        
+        // 1. Find driver in DB if not found, create a new driver
+        Driver driver = driverRepository.findByDriverId(event.userId())
+        .orElseGet(() -> driverRepository.save(
+            Driver.builder()
+                .driverId(event.userId())
+                .name(event.username()) // from UserCreatedEvent
+                .status(DriverStatus.ONLINE) // or OFFLINE, your default choice
+                .currentVehicle(null)
+                .build()
+        ));
+
+        // 2. Set status to AVAILABLE
+        // driver.setStatus(DriverStatus.AVAILABLE);
+
+        // 3. Persist change
+        // driverRepository.save(driver);
+        log.info("Driver status updated to AVAILABLE for driverId={}", event.userId());
+    }
 }
