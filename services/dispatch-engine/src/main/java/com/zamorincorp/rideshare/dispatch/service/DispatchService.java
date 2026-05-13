@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.zamorincorp.rideshare.dispatch.entity.RideDispatch;
 import com.zamorincorp.rideshare.dispatch.entity.DispatchStatus;
 import com.zamorincorp.rideshare.dispatch.repository.RideDispatchRepository;
+import com.zamorincorp.rideshare.dispatch.repository.DriverLocationQueryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -23,6 +24,9 @@ import org.springframework.beans.factory.annotation.Value;
 public class DispatchService {
     @Autowired
     private RideDispatchRepository rideDispatchRepository;
+
+    @Autowired
+    private DriverLocationQueryRepository driverLocationQueryRepository;
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -81,7 +85,24 @@ public class DispatchService {
     }
 
     private String findMatchingDriver(String pickupLocation, String destination) {
-        return "driver123";
+        log.debug("Finding nearest driver to pickup={} destination={}", pickupLocation, destination);
+        double longitude;
+        double latitude;
+        try {
+            String[] parts = pickupLocation.split(",");
+            if (parts.length != 2) {
+                throw new IllegalArgumentException("expected \"longitude,latitude\"");
+            }
+            longitude = Double.parseDouble(parts[0].trim());
+            latitude = Double.parseDouble(parts[1].trim());
+        } catch (RuntimeException e) {
+            log.warn("Invalid pickupLocation={}, cannot match drivers", pickupLocation, e);
+            return null;
+        }
+
+        return driverLocationQueryRepository
+            .findNearestDriverId(longitude, latitude)
+            .orElse(null);
     }
 
     // TODO: Add a retry mechanism for the Kafka send
