@@ -22,9 +22,9 @@ public class LocationTrackerService {
 
     private final DriverLocationRepository driverLocationRepository;
 
-    public void updateDriverLocation(DriverLocationDTO request) {
+    public void updateDriverLocation(String driverId, DriverLocationDTO request) {
         DriverLocation driverLocation = DriverLocation.builder()
-            .driverId(request.getDriverId())
+            .driverId(driverId)
             .currentLocation(convertToPoint(request.getCurrentLocation()))
             .updatedAt(Instant.now())
             .build();
