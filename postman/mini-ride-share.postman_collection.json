@@ -1,0 +1,179 @@
+{
+  "info": {
+    "_postman_id": "c4e8b2a1-7d3f-4e9c-a1b2-9f8e7d6c5b4a",
+    "name": "Mini Ride Share — Register & Request Ride",
+    "description": "Runs in order: register rider (RIDER), register driver (DRIVER), login as rider, request a ride with Bearer token.\n\n**Collection variables:** set `baseUrl` to your gateway or ingress root (same host must route `/api/auth` to auth-service and `/api/rider` to rider-service). For separate local ports without a proxy, duplicate the collection or use a second environment and split URLs manually.\n\nLocations must be `longitude,latitude` (see `RiderService.convertToPoint`).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost"
+    },
+    {
+      "key": "riderUsername",
+      "value": "rider_demo"
+    },
+    {
+      "key": "driverUsername",
+      "value": "driver_demo"
+    },
+    {
+      "key": "pickupLocation",
+      "value": "-73.9857,40.7484"
+    },
+    {
+      "key": "destination",
+      "value": "-73.9712,40.7831"
+    },
+    {
+      "key": "password",
+      "value": "ChangeMe123!"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Register Rider",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{riderUsername}}\",\n  \"password\": \"{{password}}\",\n  \"role\": \"RIDER\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/register",
+        "description": "POST /api/auth/register — creates user with role RIDER (auth-service)."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Register Driver",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{driverUsername}}\",\n  \"password\": \"{{password}}\",\n  \"role\": \"DRIVER\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/register",
+        "description": "POST /api/auth/register — creates user with role DRIVER (auth-service)."
+      },
+      "response": []
+    },
+    {
+      "name": "3. Login as Rider",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "const body = pm.response.json();",
+              "pm.test('Token present', function () {",
+              "    pm.expect(body.token).to.be.a('string').and.not.empty;",
+              "});",
+              "pm.collectionVariables.set('riderToken', body.token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{riderUsername}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login",
+        "description": "POST /api/auth/login — saves JWT to collection variable `riderToken` for the next request."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Request Ride (Rider)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 201', function () {",
+              "    pm.response.to.have.status(201);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{riderToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"pickupLocation\": \"{{pickupLocation}}\",\n  \"destination\": \"{{destination}}\"\n}"
+        },
+        "url": "{{baseUrl}}/api/rider/request",
+        "description": "POST /api/rider/request — `RideRequestDTO` fields; coordinates as `longitude,latitude`."
+      },
+      "response": []
+    }
+  ]
+}
