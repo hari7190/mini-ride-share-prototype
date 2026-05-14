@@ -1,0 +1,245 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0f1419;
+  --panel: #1a2332;
+  --border: #2d3a4d;
+  --text: #e8eef5;
+  --muted: #8b9bb4;
+  --accent: #3d9cf5;
+  --accent-hover: #5eb0ff;
+  --error: #f07178;
+  --success: #7fd99a;
+  --rider-badge: #1e4d2a;
+  --rider-badge-border: #3d9c5c;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.layout {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+}
+
+.panel {
+  flex: 1;
+  padding: 2rem 2.25rem;
+  border-right: 1px solid var(--border);
+  overflow: auto;
+}
+
+.panel:last-child {
+  border-right: none;
+}
+
+.panel--auth {
+  max-width: 440px;
+  flex: 0 0 40%;
+  background: linear-gradient(165deg, #152030 0%, var(--panel) 55%);
+}
+
+.panel--rides {
+  background: var(--bg);
+}
+
+.panel__title {
+  margin: 0 0 1.25rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.session-banner {
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+}
+
+.session-banner--rider {
+  background: var(--rider-badge);
+  border-color: var(--rider-badge-border);
+  color: #d4f5df;
+}
+
+.session-banner--warn {
+  background: #3a2e1a;
+  border-color: #8a6d3b;
+  color: #f5e6c8;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+.form__row {
+  margin-bottom: 1rem;
+}
+
+.form__row label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.form__row input,
+.form__row select,
+.api-base {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #0d1218;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.form__row input:focus,
+.form__row select:focus,
+.api-base:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.field-hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.form__actions .ui-button {
+  flex: 1;
+  min-width: 6rem;
+}
+
+#register-btn,
+#request-ride-btn {
+  padding: 0.55rem 1.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  background: var(--accent);
+  color: #0a0e14;
+  border: none;
+  font-weight: 600;
+}
+
+#register-btn:hover:not(:disabled),
+#request-ride-btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+#signin-btn.ui-button-secondary {
+  background: #2a3545;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+#signin-btn.ui-button-secondary:hover:not(:disabled) {
+  background: #354256;
+}
+
+.logout-btn {
+  margin-top: 0.75rem;
+  padding: 0.45rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.logout-btn:hover {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
+#register-btn:disabled,
+#signin-btn:disabled,
+#request-ride-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.status {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  min-height: 1.25rem;
+}
+
+.status--error {
+  color: var(--error);
+}
+
+.status--ok {
+  color: var(--success);
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.45;
+  margin: 0 0 1rem;
+}
+
+.hint code {
+  font-size: 0.8rem;
+  background: var(--panel);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+
+.config-block {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.config-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+.config-label:not(:first-child) {
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 720px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .panel {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    max-width: none;
+    flex: 1;
+  }
+
+  .panel:last-child {
+    border-bottom: none;
+  }
+}

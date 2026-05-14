@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Ride Share</title>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app" class="layout">
+    <section class="panel panel--auth" aria-label="Authentication">
+      <h1 class="panel__title">Account</h1>
+      <div id="session-banner" class="session-banner is-hidden" role="status" aria-live="polite"></div>
+      <form id="register-form" class="form" novalidate>
+        <div class="form__row">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" autocomplete="username" required />
+        </div>
+        <div class="form__row">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" required />
+        </div>
+        <div class="form__row">
+          <label for="role">Role</label>
+          <select id="role" name="role">
+            <option value="RIDER">Rider</option>
+            <option value="DRIVER">Driver</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+        </div>
+        <div class="form__actions">
+          <button type="submit" id="register-btn" class="ui-button ui-widget ui-corner-all">Register</button>
+          <button type="button" id="signin-btn" class="ui-button ui-widget ui-corner-all ui-button-secondary">Sign in</button>
+        </div>
+      </form>
+      <button type="button" id="logout-btn" class="logout-btn is-hidden ui-button ui-widget ui-corner-all">Log out</button>
+      <p id="auth-status" class="status" role="status" aria-live="polite"></p>
+    </section>
+    <section class="panel panel--rides" aria-label="Request a ride">
+      <h2 class="panel__title">Request a ride</h2>
+      <p class="hint">Locations use <code>longitude,latitude</code> (WGS84), matching <code>RideRequestDTO</code> in rider-service.</p>
+      <form id="ride-form" class="form" novalidate>
+        <div class="form__row">
+          <label for="pickup-location">Pickup</label>
+          <input type="text" id="pickup-location" name="pickupLocation" required
+            spellcheck="false"
+            placeholder="-79.3869, 43.6425"
+            value="-79.3869,43.6425"
+            title="CN Tower area" />
+          <span class="field-hint">Default: CN Tower</span>
+        </div>
+        <div class="form__row">
+          <label for="destination-location">Destination</label>
+          <input type="text" id="destination-location" name="destination" required
+            spellcheck="false"
+            placeholder="-79.3806, 43.6452"
+            value="-79.3806,43.6452" />
+          <span class="field-hint">Example: Union Station</span>
+        </div>
+        <button type="submit" id="request-ride-btn" class="ui-button ui-widget ui-corner-all">Request ride</button>
+      </form>
+      <p id="ride-status" class="status" role="status" aria-live="polite"></p>
+      <div class="config-block">
+        <label class="config-label" for="api-base-auth">Auth service base URL</label>
+        <input type="url" id="api-base-auth" class="api-base" value="http://localhost:8080" autocomplete="off" />
+        <label class="config-label" for="api-base-rider">Rider service base URL</label>
+        <input type="url" id="api-base-rider" class="api-base" value="http://localhost:8081" autocomplete="off" />
+      </div>
+    </section>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
+  <script src="app.js"></script>
+</body>
+</html>
