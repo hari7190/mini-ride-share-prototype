@@ -1,5 +1,10 @@
 name: Build Microservices
 
+# GITHUB_TOKEN needs actions:write so BuildKit can read/write the GHA cache backend (type=gha).
+permissions:
+  contents: read
+  actions: write
+
 on:
   push:
     branches: [ "main" ]
@@ -87,6 +92,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -97,6 +104,8 @@ jobs:
         with:
           context: ./services/auth-service
           push: true
+          cache-from: type=gha,scope=auth-service
+          cache-to: type=gha,mode=max,scope=auth-service
           tags: |
             ${{ secrets.DOCKER_IMAGE_REPO }}:auth-service-latest
             ${{ secrets.DOCKER_IMAGE_REPO }}:auth-service-${{ github.sha }}
@@ -107,6 +116,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -117,6 +128,8 @@ jobs:
         with:
           context: ./services/rider-service
           push: true
+          cache-from: type=gha,scope=rider-service
+          cache-to: type=gha,mode=max,scope=rider-service
           tags: |
             ${{ secrets.DOCKER_IMAGE_REPO }}:rider-service-latest
             ${{ secrets.DOCKER_IMAGE_REPO }}:rider-service-${{ github.sha }}
@@ -127,6 +140,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -137,6 +152,8 @@ jobs:
         with:
           context: ./services/dispatch-engine
           push: true
+          cache-from: type=gha,scope=dispatch-engine
+          cache-to: type=gha,mode=max,scope=dispatch-engine
           tags: |
             ${{ secrets.DOCKER_IMAGE_REPO }}:dispatch-engine-latest
             ${{ secrets.DOCKER_IMAGE_REPO }}:dispatch-engine-${{ github.sha }}
@@ -147,6 +164,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -157,6 +176,8 @@ jobs:
         with:
           context: ./services/driver-service
           push: true
+          cache-from: type=gha,scope=driver-service
+          cache-to: type=gha,mode=max,scope=driver-service
           tags: |
             ${{ secrets.DOCKER_IMAGE_REPO }}:driver-service-latest
             ${{ secrets.DOCKER_IMAGE_REPO }}:driver-service-${{ github.sha }}
@@ -167,6 +188,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -177,6 +200,8 @@ jobs:
         with:
           context: ./services/location-tracker
           push: true
+          cache-from: type=gha,scope=location-tracker
+          cache-to: type=gha,mode=max,scope=location-tracker
           tags: |
             ${{ secrets.DOCKER_IMAGE_REPO }}:location-tracker-latest
             ${{ secrets.DOCKER_IMAGE_REPO }}:location-tracker-${{ github.sha }}
