@@ -41,6 +41,15 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll() // Allow registration/login
+                .requestMatchers(
+                        "/actuator/health",
+                        "/actuator/health/**",
+                        "/actuator/info",
+                        "/actuator/info/**",
+                        "/actuator/metrics",
+                        "/actuator/metrics/**",
+                        "/actuator/prometheus")
+                    .permitAll()
                 .anyRequest().authenticated()               // Protect everything else
             );
         

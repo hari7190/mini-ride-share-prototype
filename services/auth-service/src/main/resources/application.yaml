@@ -32,6 +32,31 @@ jwt:
   secret: ${JWT_SECRET}
   expiration: 86400000 # 24 hours in milliseconds
 
+info:
+  app:
+    name: auth-service
+    description: Identity and Access Management Service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+    metrics:
+      access: read_only
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+
 app:
   kafka:
     topics:
