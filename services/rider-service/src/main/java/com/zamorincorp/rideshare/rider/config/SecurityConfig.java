@@ -42,7 +42,15 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Stateless APIs don't need CSRF
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
+                .requestMatchers(
+                        "/actuator/health",
+                        "/actuator/health/**",
+                        "/actuator/info",
+                        "/actuator/info/**",
+                        "/actuator/metrics",
+                        "/actuator/metrics/**",
+                        "/actuator/prometheus")
+                    .permitAll()
                 .requestMatchers("/api/**").authenticated() // This is specific to THIS service
                 .anyRequest().permitAll()
             )
