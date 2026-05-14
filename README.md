@@ -93,6 +93,7 @@ Notes on troubleshooting this setup: [Debugging](docs/Debugging.md).
 7. Move the base images for deployment to minimal distroless images.
 8. Add caching into Github actions for quicker build times.
 9. Refactor to project level Helm chart from app level helm chart.
+10. Tighten up CORS implementation.
 
 
 Decisions :
