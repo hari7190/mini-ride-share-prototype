@@ -19,4 +19,4 @@ resources:
   limits:
     cpu: 500m
     memory: 768Mi # Increased from 512Mi
-replicaCount: 1
+
