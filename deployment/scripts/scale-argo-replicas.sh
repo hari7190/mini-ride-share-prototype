@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Set replicaCount overrides in Argo CD Application manifests (deployment/argo-apps/*-app.yaml).
-# Does not apply to the cluster — run kubectl apply or argocd app sync yourself.
+# Optionally applies the updated Application YAMLs with kubectl.
 
 set -euo pipefail
 
@@ -9,6 +9,7 @@ MAX_REPLICAS=2
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ARGO_APPS_DIR="$(cd "${SCRIPT_DIR}/../argo-apps" && pwd)"
+KUBECTL="${KUBECTL:-kubectl}"
 
 usage() {
   cat <<EOF
@@ -24,10 +25,35 @@ Examples:
   $(basename "$0") 0     # scale down
   $(basename "$0") 2     # scale up
 
-After editing, apply when ready:
-  kubectl apply -f ${ARGO_APPS_DIR}/
-  # or: argocd app sync -l ...
+After editing, you will be asked whether to run:
+  kubectl apply -f <updated *-app.yaml files>
 EOF
+}
+
+prompt_apply() {
+  local input
+  while true; do
+    printf "Apply updated Application manifests with kubectl? [y/N]: "
+    read -r input
+    case "${input:-n}" in
+      [yY]|[yY][eE][sS]) return 0 ;;
+      [nN]|[nN][oO]|"") return 1 ;;
+      *) echo "Please answer y or n." ;;
+    esac
+  done
+}
+
+apply_app_files() {
+  local -a files=("$@")
+  local file
+  if ! command -v "$KUBECTL" >/dev/null 2>&1; then
+    echo "Error: ${KUBECTL} not found in PATH." >&2
+    exit 1
+  fi
+  echo "Applying ${#files[@]} Application manifest(s)..."
+  for file in "${files[@]}"; do
+    "$KUBECTL" apply -f "$file"
+  done
 }
 
 validate_replicas() {
@@ -131,7 +157,13 @@ main() {
   done
 
   show_current
-  echo "Done. Files updated only — not applied to the cluster."
+
+  if prompt_apply; then
+    apply_app_files "${files[@]}"
+    echo "Done. Files updated and applied. Argo CD may auto-sync; or run app sync if needed."
+  else
+    echo "Done. Files updated only — not applied to the cluster."
+  fi
 }
 
 main "$@"
