@@ -1,0 +1,130 @@
+package com.zamorincorp.rideshare.rider.service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zamorincorp.rideshare.rider.dto.RideRequestDTO;
+import com.zamorincorp.rideshare.rider.dto.RideRequestedEvent;
+import com.zamorincorp.rideshare.rider.entity.Trip;
+import com.zamorincorp.rideshare.rider.entity.TripStatus;
+import com.zamorincorp.rideshare.rider.repository.TripRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.Message;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class RiderServiceTest {
+
+    @Mock
+    private TripRepository tripRepository;
+
+    @Mock
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Mock
+    private ObjectMapper objectMapper;
+
+    @InjectMocks
+    private RiderService riderService;
+
+    @Captor
+    private ArgumentCaptor<Trip> tripCaptor;
+
+    @Captor
+    private ArgumentCaptor<Message<String>> messageCaptor;
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(riderService, "rideRequestsTopic", "ride-requests.v1");
+        ReflectionTestUtils.setField(riderService, "rideRequestedEventType",
+                "com.zamorincorp.rideshare.rider.dto.RideRequestedEventDTO");
+        ReflectionTestUtils.setField(riderService, "rideRequestedEventVersion", "1");
+    }
+
+    @Test
+    void createRideRequest_savesTripAndPublishesEvent() throws Exception {
+        RideRequestDTO dto = sampleRideRequest();
+        when(tripRepository.save(any(Trip.class))).thenAnswer(invocation -> {
+            Trip trip = invocation.getArgument(0);
+            trip.setId(42L);
+            return trip;
+        });
+        when(objectMapper.writeValueAsString(any(RideRequestedEvent.class))).thenReturn("{\"ok\":true}");
+
+        Trip result = riderService.createRideRequest(dto, "rider-1");
+
+        verify(tripRepository).save(tripCaptor.capture());
+        Trip savedTrip = tripCaptor.getValue();
+        assertEquals("rider-1", savedTrip.getRiderId());
+        assertEquals(TripStatus.PENDING, savedTrip.getStatus());
+        assertEquals(-79.38, savedTrip.getPickupLocation().getX(), 0.001);
+        assertEquals(43.65, savedTrip.getPickupLocation().getY(), 0.001);
+        assertEquals(-79.40, savedTrip.getDestination().getX(), 0.001);
+        assertEquals(43.70, savedTrip.getDestination().getY(), 0.001);
+
+        assertEquals(42L, result.getId());
+
+        verify(kafkaTemplate).send(messageCaptor.capture());
+        Message<String> message = messageCaptor.getValue();
+        assertEquals("{\"ok\":true}", message.getPayload());
+        assertEquals("ride-requests.v1", message.getHeaders().get(KafkaHeaders.TOPIC));
+        assertEquals("42", message.getHeaders().get(KafkaHeaders.KEY));
+        assertEquals("com.zamorincorp.rideshare.rider.dto.RideRequestedEventDTO",
+                message.getHeaders().get("eventType"));
+        assertEquals("1", message.getHeaders().get("eventVersion"));
+    }
+
+    @Test
+    void createRideRequest_whenPickupFormatInvalid_throwsIllegalArgumentException() {
+        RideRequestDTO dto = new RideRequestDTO();
+        dto.setPickupLocation("POINT (-79.38 43.65)");
+        dto.setDestination("-79.40,43.70");
+
+        assertThrows(IllegalArgumentException.class,
+                () -> riderService.createRideRequest(dto, "rider-1"));
+
+        verify(tripRepository, never()).save(any());
+        verify(kafkaTemplate, never()).send(any(Message.class));
+    }
+
+    @Test
+    void createRideRequest_whenSerializationFails_throwsIllegalStateException() throws Exception {
+        RideRequestDTO dto = sampleRideRequest();
+        when(tripRepository.save(any(Trip.class))).thenAnswer(invocation -> {
+            Trip trip = invocation.getArgument(0);
+            trip.setId(42L);
+            return trip;
+        });
+        doThrow(new JsonProcessingException("boom") { })
+                .when(objectMapper).writeValueAsString(any(RideRequestedEvent.class));
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                () -> riderService.createRideRequest(dto, "rider-1"));
+        assertTrue(ex.getMessage().contains("Could not serialize ride request event"));
+        verify(kafkaTemplate, never()).send(any(Message.class));
+    }
+
+    private RideRequestDTO sampleRideRequest() {
+        RideRequestDTO dto = new RideRequestDTO();
+        dto.setPickupLocation("-79.38,43.65");
+        dto.setDestination("-79.40,43.70");
+        return dto;
+    }
+}
