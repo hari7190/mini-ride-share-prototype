@@ -37,7 +37,7 @@ public class AuthController {
         return userRepository
                 .findByUsername(user.getUsername())
                 .filter(u -> passwordEncoder.matches(user.getPassword(), u.getPassword()))
-                .map(u -> ResponseEntity.ok(Map.of("token", jwtProvider.generateToken(u.getUsername()))))
+                .map(u -> ResponseEntity.ok(Map.of("token", jwtProvider.generateToken(u.getId()))))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("token", "")));
     }
 }

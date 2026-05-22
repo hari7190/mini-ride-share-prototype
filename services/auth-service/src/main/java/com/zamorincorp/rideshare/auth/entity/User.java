@@ -2,7 +2,10 @@
 package com.zamorincorp.rideshare.auth.entity;
 
 import jakarta.persistence.*;
+import java.util.UUID;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "users")
@@ -14,8 +17,10 @@ import lombok.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(length = 36, columnDefinition = "CHAR(36)")
+    private UUID id;
 
     @Column(unique = true, nullable = false)
     private String username;
