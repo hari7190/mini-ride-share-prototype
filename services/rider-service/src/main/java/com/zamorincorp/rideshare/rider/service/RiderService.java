@@ -50,13 +50,13 @@ public class RiderService {
     public Trip createRideRequest(RideRequestDTO rideRequestDTO, String riderId) {
 
         log.info("Creating ride request for riderId={} pickupLocation={} destination={}"
-        , riderId, rideRequestDTO.getPickupLocation(), rideRequestDTO.getDestination());
+        , riderId, rideRequestDTO.pickupLocation(), rideRequestDTO.destination());
 
         // 1. Convert DTO to Model (Mapping)
         Trip trip = new Trip();
         trip.setRiderId(riderId);
-        trip.setPickupLocation(convertToPoint(rideRequestDTO.getPickupLocation()));
-        trip.setDestination(convertToPoint(rideRequestDTO.getDestination()));
+        trip.setPickupLocation(convertToPoint(rideRequestDTO.pickupLocation()));
+        trip.setDestination(convertToPoint(rideRequestDTO.destination()));
         trip.setStatus(TripStatus.PENDING);
 
         // 2. Save the trip to the database
@@ -70,8 +70,8 @@ public class RiderService {
                 Instant.now().toString(),
                 saved.getId(),
                 saved.getRiderId(),
-                saved.getPickupLocation().toString(),
-                saved.getDestination().toString(),
+                saved.getPickupLocation().getCoordinate().x + ", " + saved.getPickupLocation().getCoordinate().y,
+                saved.getDestination().getCoordinate().x + ", " + saved.getDestination().getCoordinate().y,
                 saved.getStatus().name()
         );
 
