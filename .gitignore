@@ -42,3 +42,4 @@ terraform.rc
 # Terraform variable files (often contain secrets)
 *.tfvars
 *.tfvars.json
+application-local.yml
