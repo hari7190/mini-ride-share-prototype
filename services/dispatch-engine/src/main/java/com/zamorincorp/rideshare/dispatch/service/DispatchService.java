@@ -93,8 +93,8 @@ public class DispatchService {
             if (parts.length != 2) {
                 throw new IllegalArgumentException("expected \"longitude,latitude\"");
             }
-            longitude = Double.parseDouble(parts[0].trim());
-            latitude = Double.parseDouble(parts[1].trim());
+            latitude = Double.parseDouble(parts[0].trim());
+            longitude = Double.parseDouble(parts[1].trim());
         } catch (RuntimeException e) {
             log.warn("Invalid pickupLocation={}, cannot match drivers", pickupLocation, e);
             return null;

@@ -30,7 +30,7 @@ public class DriverLocationQueryRepository {
         // MySQL geographic WKT for SRID 4326 uses latitude-first for POINT.
         String pickupWkt = String.format(Locale.US, "POINT(%f %f)", latitude, longitude);
         String sql = """
-            SELECT driver_id
+            SELECT drivers.driver_id
             FROM driver_locations
             INNER JOIN drivers ON driver_locations.driver_id = drivers.driver_id
             WHERE current_location IS NOT NULL AND drivers.status = 'ONLINE'
