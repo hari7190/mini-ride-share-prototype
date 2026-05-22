@@ -13,6 +13,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Point;
 
+import java.math.BigInteger;
 import java.time.Instant;
 
 @Entity
@@ -25,8 +26,7 @@ import java.time.Instant;
 public class DriverLocation {
 
     @Id
-    @Column(name = "driver_id", nullable = false, length = 64)
-    private String driverId;
+    private BigInteger driverId;
 
     /**
      * Geographic point in WGS-84 (SRID 4326). Nullable until the driver reports a position.

@@ -10,6 +10,8 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
+
+import java.math.BigInteger;
 import java.time.Instant;
 
 @Service
@@ -22,7 +24,7 @@ public class LocationTrackerService {
 
     private final DriverLocationRepository driverLocationRepository;
 
-    public void updateDriverLocation(String driverId, DriverLocationDTO request) {
+    public void updateDriverLocation(BigInteger driverId, DriverLocationDTO request) {
         DriverLocation driverLocation = DriverLocation.builder()
             .driverId(driverId)
             .currentLocation(convertToPoint(request.getCurrentLocation()))
