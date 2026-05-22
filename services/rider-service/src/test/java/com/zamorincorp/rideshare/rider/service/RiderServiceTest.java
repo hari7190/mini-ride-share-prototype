@@ -29,8 +29,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.UUID;
+
 @ExtendWith(MockitoExtension.class)
 class RiderServiceTest {
+
+    private static final UUID RIDER_ID =
+            UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
 
     @Mock
     private TripRepository tripRepository;
@@ -68,11 +73,11 @@ class RiderServiceTest {
         });
         when(objectMapper.writeValueAsString(any(RideRequestedEvent.class))).thenReturn("{\"ok\":true}");
 
-        Trip result = riderService.createRideRequest(dto, "rider-1");
+        Trip result = riderService.createRideRequest(dto, RIDER_ID.toString());
 
         verify(tripRepository).save(tripCaptor.capture());
         Trip savedTrip = tripCaptor.getValue();
-        assertEquals("rider-1", savedTrip.getRiderId());
+        assertEquals(RIDER_ID, savedTrip.getRiderId());
         assertEquals(TripStatus.PENDING, savedTrip.getStatus());
         assertEquals(-79.38, savedTrip.getPickupLocation().getX(), 0.001);
         assertEquals(43.65, savedTrip.getPickupLocation().getY(), 0.001);
@@ -98,7 +103,7 @@ class RiderServiceTest {
         dto.setDestination("-79.40,43.70");
 
         assertThrows(IllegalArgumentException.class,
-                () -> riderService.createRideRequest(dto, "rider-1"));
+                () -> riderService.createRideRequest(dto, RIDER_ID.toString()));
 
         verify(tripRepository, never()).save(any());
         verify(kafkaTemplate, never()).send(any(Message.class));
@@ -116,7 +121,7 @@ class RiderServiceTest {
                 .when(objectMapper).writeValueAsString(any(RideRequestedEvent.class));
 
         IllegalStateException ex = assertThrows(IllegalStateException.class,
-                () -> riderService.createRideRequest(dto, "rider-1"));
+                () -> riderService.createRideRequest(dto, RIDER_ID.toString()));
         assertTrue(ex.getMessage().contains("Could not serialize ride request event"));
         verify(kafkaTemplate, never()).send(any(Message.class));
     }

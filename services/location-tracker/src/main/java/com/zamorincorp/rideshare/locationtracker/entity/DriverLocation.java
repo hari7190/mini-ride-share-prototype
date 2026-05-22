@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.Instant;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,9 +14,6 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Point;
-
-import java.math.BigInteger;
-import java.time.Instant;
 
 @Entity
 @Table(name = "driver_locations")
@@ -25,8 +24,11 @@ import java.time.Instant;
 @Builder
 public class DriverLocation {
 
+    /** Same UUID as {@code users.id} / {@code drivers.driver_id}. */
     @Id
-    private BigInteger driverId;
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "driver_id", length = 36, columnDefinition = "CHAR(36)")
+    private UUID driverId;
 
     /**
      * Geographic point in WGS-84 (SRID 4326). Nullable until the driver reports a position.

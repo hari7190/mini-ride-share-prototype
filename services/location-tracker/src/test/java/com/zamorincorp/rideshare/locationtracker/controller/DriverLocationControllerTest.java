@@ -30,9 +30,10 @@ class DriverLocationControllerTest {
         DriverLocationDTO dto = new DriverLocationDTO();
         dto.setCurrentLocation("-79.38,43.65");
 
+        String driverId = "550e8400-e29b-41d4-a716-446655440000";
         Jwt jwt = Jwt.withTokenValue("token")
                 .header("alg", "none")
-                .subject("driver-abc")
+                .subject(driverId)
                 .issuedAt(Instant.now())
                 .expiresAt(Instant.now().plusSeconds(3600))
                 .build();
@@ -41,6 +42,6 @@ class DriverLocationControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Location updated successfully", response.getBody());
-        verify(locationTrackerService).updateDriverLocation("driver-abc", dto);
+        verify(locationTrackerService).updateDriverLocation(driverId, dto);
     }
 }

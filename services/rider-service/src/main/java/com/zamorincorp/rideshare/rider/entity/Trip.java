@@ -1,13 +1,14 @@
 package com.zamorincorp.rideshare.rider.entity;
 
 import jakarta.persistence.*;
+import java.util.UUID;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Point;
 
 @Entity
-@Table(name = "trips")
+@Table(name = "rides")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,7 +20,10 @@ public class Trip {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String riderId;
+    /** Same UUID as {@code users.id} in auth-service (JWT {@code sub}). */
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "rider_id", length = 36, columnDefinition = "CHAR(36)")
+    private UUID riderId;
 
     /**
      * Geographic point in WGS-84 (SRID 4326). Nullable until the driver reports a position.

@@ -14,6 +14,7 @@ import com.zamorincorp.rideshare.driver.entity.DriverStatus;
 import com.zamorincorp.rideshare.driver.dto.RideAcceptedEvent;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.messaging.Message;
@@ -47,7 +48,7 @@ public class DriverService {
     // fetch rides
     public RideDTO fetchRide(String driverId) {
         return new RideDTO(
-                driverRepository.findByDriverId(driverId).map(Driver::getCurrentTripId)
+                driverRepository.findById(parseDriverId(driverId)).map(Driver::getCurrentTripId)
                         .orElseThrow(() -> new RuntimeException("Driver not found")));
     }
 
@@ -67,7 +68,8 @@ public class DriverService {
         log.info("Handling driver assigned event: tripId={} riderId={} driverId={}", event.tripId(), event.riderId(), event.driverId());
 
         // 1. Find driver in DB
-        Driver driver = driverRepository.findByDriverId(event.driverId()).orElseThrow(() -> new RuntimeException("Driver not found"));
+        Driver driver = driverRepository.findById(parseDriverId(event.driverId()))
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
 
         // 2. Set status to BUSY
         driver.setStatus(DriverStatus.BUSY);
@@ -85,17 +87,22 @@ public class DriverService {
         log.info("Handling user created event: userId={} username={} role={}", event.userId(), event.username(), event.role());
 
         // 1. Find driver in DB if not found, create a new driver
-        Driver driver = driverRepository.findByDriverId(event.userId())
+        UUID userId = parseDriverId(event.userId());
+        Driver driver = driverRepository.findById(userId)
                 .orElseGet(() -> driverRepository.save(
                         Driver.builder()
-                                .driverId(event.userId())
+                                .driverId(userId)
                                 .name(event.username()) // from UserCreatedEvent
                                 .status(DriverStatus.ONLINE) // or OFFLINE, your default choice
                                 .currentVehicle(null)
                                 .build()
                 ));
 
-        log.info("Driver status updated to AVAILABLE for driverId={}", event.userId());
+        log.info("Driver status updated to AVAILABLE for driverId={}", userId);
+    }
+
+    private static UUID parseDriverId(String driverId) {
+        return UUID.fromString(driverId);
     }
 
     private void publishDriverAssignedEvent(RideDispatchEvent event) {

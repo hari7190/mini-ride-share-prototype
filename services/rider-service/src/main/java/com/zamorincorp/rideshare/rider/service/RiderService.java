@@ -47,7 +47,8 @@ public class RiderService {
     private String rideRequestedEventVersion;
 
     //create createRideRequest method
-    public Trip createRideRequest(RideRequestDTO rideRequestDTO, String riderId) {
+    public Trip createRideRequest(RideRequestDTO rideRequestDTO, String riderIdSubject) {
+        UUID riderId = UUID.fromString(riderIdSubject);
 
         log.info("Creating ride request for riderId={} pickupLocation={} destination={}"
         , riderId, rideRequestDTO.pickupLocation(), rideRequestDTO.destination());
@@ -69,7 +70,7 @@ public class RiderService {
                 rideRequestedEventVersion,
                 Instant.now().toString(),
                 saved.getId(),
-                saved.getRiderId(),
+                saved.getRiderId().toString(),
                 saved.getPickupLocation().getCoordinate().x + ", " + saved.getPickupLocation().getCoordinate().y,
                 saved.getDestination().getCoordinate().x + ", " + saved.getDestination().getCoordinate().y,
                 saved.getStatus().name()

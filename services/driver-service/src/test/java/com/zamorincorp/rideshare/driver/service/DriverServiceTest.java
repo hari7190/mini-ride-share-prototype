@@ -23,6 +23,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,6 +36,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DriverServiceTest {
+
+    private static final UUID DRIVER_ID =
+            UUID.fromString("550e8400-e29b-41d4-a716-446655440009");
+    private static final UUID EXISTING_USER_ID =
+            UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
+    private static final UUID NEW_USER_ID =
+            UUID.fromString("550e8400-e29b-41d4-a716-446655440002");
 
     @Mock
     private DriverRepository driverRepository;
@@ -66,11 +74,11 @@ class DriverServiceTest {
     void handleDriverAssigned_marksDriverBusyAndPublishesEvent() throws Exception {
         RideDispatchEvent event = sampleDispatchEvent();
         Driver driver = Driver.builder()
-                .driverId("driver-9")
+                .driverId(DRIVER_ID)
                 .name("Bob")
                 .status(DriverStatus.ONLINE)
                 .build();
-        when(driverRepository.findByDriverId("driver-9")).thenReturn(Optional.of(driver));
+        when(driverRepository.findById(DRIVER_ID)).thenReturn(Optional.of(driver));
         when(driverRepository.save(any(Driver.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(objectMapper.writeValueAsString(any(RideAcceptedEvent.class))).thenReturn("{\"ok\":true}");
 
@@ -92,7 +100,7 @@ class DriverServiceTest {
     @Test
     void handleDriverAssigned_whenDriverNotFound_throwsRuntimeException() {
         RideDispatchEvent event = sampleDispatchEvent();
-        when(driverRepository.findByDriverId("driver-9")).thenReturn(Optional.empty());
+        when(driverRepository.findById(DRIVER_ID)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> driverService.handleDriverAssigned(event));
 
@@ -104,10 +112,10 @@ class DriverServiceTest {
     void handleDriverAssigned_whenSerializationFails_throwsIllegalStateException() throws Exception {
         RideDispatchEvent event = sampleDispatchEvent();
         Driver driver = Driver.builder()
-                .driverId("driver-9")
+                .driverId(DRIVER_ID)
                 .status(DriverStatus.ONLINE)
                 .build();
-        when(driverRepository.findByDriverId("driver-9")).thenReturn(Optional.of(driver));
+        when(driverRepository.findById(DRIVER_ID)).thenReturn(Optional.of(driver));
         when(driverRepository.save(any(Driver.class))).thenAnswer(invocation -> invocation.getArgument(0));
         doThrow(new JsonProcessingException("boom") { })
                 .when(objectMapper).writeValueAsString(any(RideAcceptedEvent.class));
@@ -120,13 +128,13 @@ class DriverServiceTest {
 
     @Test
     void handleUserCreated_whenDriverExists_doesNotCreateNewDriver() {
-        UserCreatedEvent event = sampleUserCreatedEvent("driver-1");
+        UserCreatedEvent event = sampleUserCreatedEvent(EXISTING_USER_ID);
         Driver existing = Driver.builder()
-                .driverId("driver-1")
+                .driverId(EXISTING_USER_ID)
                 .name("existing")
                 .status(DriverStatus.BUSY)
                 .build();
-        when(driverRepository.findByDriverId("driver-1")).thenReturn(Optional.of(existing));
+        when(driverRepository.findById(EXISTING_USER_ID)).thenReturn(Optional.of(existing));
 
         driverService.handleUserCreated(event);
 
@@ -135,15 +143,15 @@ class DriverServiceTest {
 
     @Test
     void handleUserCreated_whenDriverMissing_createsOnlineDriver() {
-        UserCreatedEvent event = sampleUserCreatedEvent("new-driver");
-        when(driverRepository.findByDriverId("new-driver")).thenReturn(Optional.empty());
+        UserCreatedEvent event = sampleUserCreatedEvent(NEW_USER_ID);
+        when(driverRepository.findById(NEW_USER_ID)).thenReturn(Optional.empty());
         when(driverRepository.save(any(Driver.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         driverService.handleUserCreated(event);
 
         verify(driverRepository).save(driverCaptor.capture());
         Driver created = driverCaptor.getValue();
-        assertEquals("new-driver", created.getDriverId());
+        assertEquals(NEW_USER_ID, created.getDriverId());
         assertEquals("alice", created.getName());
         assertEquals(DriverStatus.ONLINE, created.getStatus());
     }
@@ -153,7 +161,7 @@ class DriverServiceTest {
         return new RideDispatchEvent(
                 42L,
                 "rider-1",
-                "driver-9",
+                DRIVER_ID.toString(),
                 "-79.38,43.65",
                 "-79.40,43.70",
                 now,
@@ -161,8 +169,8 @@ class DriverServiceTest {
         );
     }
 
-    private UserCreatedEvent sampleUserCreatedEvent(String userId) {
+    private UserCreatedEvent sampleUserCreatedEvent(UUID userId) {
         LocalDateTime now = LocalDateTime.of(2026, 5, 17, 12, 0);
-        return new UserCreatedEvent(userId, "alice", "DRIVER", now, now);
+        return new UserCreatedEvent(userId.toString(), "alice", "DRIVER", now, now);
     }
 }

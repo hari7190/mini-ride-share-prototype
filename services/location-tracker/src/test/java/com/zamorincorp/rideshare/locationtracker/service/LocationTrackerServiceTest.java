@@ -19,8 +19,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.UUID;
+
 @ExtendWith(MockitoExtension.class)
 class LocationTrackerServiceTest {
+
+    private static final UUID DRIVER_ID =
+            UUID.fromString("550e8400-e29b-41d4-a716-446655440009");
 
     @Mock
     private DriverLocationRepository driverLocationRepository;
@@ -38,11 +43,11 @@ class LocationTrackerServiceTest {
         when(driverLocationRepository.save(any(DriverLocation.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        locationTrackerService.updateDriverLocation("driver-9", dto);
+        locationTrackerService.updateDriverLocation(DRIVER_ID.toString(), dto);
 
         verify(driverLocationRepository).save(driverLocationCaptor.capture());
         DriverLocation saved = driverLocationCaptor.getValue();
-        assertEquals("driver-9", saved.getDriverId());
+        assertEquals(DRIVER_ID, saved.getDriverId());
         assertEquals(-79.38, saved.getCurrentLocation().getX(), 0.001);
         assertEquals(43.65, saved.getCurrentLocation().getY(), 0.001);
         assertNotNull(saved.getUpdatedAt());
@@ -54,7 +59,7 @@ class LocationTrackerServiceTest {
         dto.setCurrentLocation("POINT (-79.38 43.65)");
 
         assertThrows(IllegalArgumentException.class,
-                () -> locationTrackerService.updateDriverLocation("driver-9", dto));
+                () -> locationTrackerService.updateDriverLocation(DRIVER_ID.toString(), dto));
 
         verify(driverLocationRepository, never()).save(any());
     }
