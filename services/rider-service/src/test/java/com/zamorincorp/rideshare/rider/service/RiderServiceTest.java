@@ -98,9 +98,8 @@ class RiderServiceTest {
 
     @Test
     void createRideRequest_whenPickupFormatInvalid_throwsIllegalArgumentException() {
-        RideRequestDTO dto = new RideRequestDTO();
-        dto.setPickupLocation("POINT (-79.38 43.65)");
-        dto.setDestination("-79.40,43.70");
+        RideRequestDTO dto = new RideRequestDTO(
+                null, "POINT (-79.38 43.65)", "-79.40,43.70");
 
         assertThrows(IllegalArgumentException.class,
                 () -> riderService.createRideRequest(dto, RIDER_ID.toString()));
@@ -127,9 +126,6 @@ class RiderServiceTest {
     }
 
     private RideRequestDTO sampleRideRequest() {
-        RideRequestDTO dto = new RideRequestDTO();
-        dto.setPickupLocation("-79.38,43.65");
-        dto.setDestination("-79.40,43.70");
-        return dto;
+        return new RideRequestDTO(null, "-79.38,43.65", "-79.40,43.70");
     }
 }
