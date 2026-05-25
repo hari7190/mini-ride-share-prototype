@@ -54,6 +54,21 @@ class LocationTrackerServiceTest {
     }
 
     @Test
+    void updateDriverLocation_parsesCoordinatesWithSurroundingWhitespace() {
+        DriverLocationDTO dto = new DriverLocationDTO();
+        dto.setCurrentLocation(" -79.38 , 43.65 ");
+        when(driverLocationRepository.save(any(DriverLocation.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        locationTrackerService.updateDriverLocation(DRIVER_ID.toString(), dto);
+
+        verify(driverLocationRepository).save(driverLocationCaptor.capture());
+        DriverLocation saved = driverLocationCaptor.getValue();
+        assertEquals(-79.38, saved.getCurrentLocation().getX(), 0.001);
+        assertEquals(43.65, saved.getCurrentLocation().getY(), 0.001);
+    }
+
+    @Test
     void updateDriverLocation_whenLocationFormatInvalid_throwsIllegalArgumentException() {
         DriverLocationDTO dto = new DriverLocationDTO();
         dto.setCurrentLocation("POINT (-79.38 43.65)");
