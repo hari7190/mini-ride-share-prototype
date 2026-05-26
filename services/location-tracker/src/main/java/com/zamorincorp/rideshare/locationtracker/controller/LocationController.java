@@ -10,10 +10,11 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import com.zamorincorp.rideshare.locationtracker.service.LocationTrackerService;
 import com.zamorincorp.rideshare.locationtracker.dto.DriverLocationDTO;
+import com.zamorincorp.rideshare.locationtracker.dto.RiderLocationDTO;
 
 @RestController
 @RequestMapping("/api/locationtracker")
-public class DriverLocationController {
+public class LocationController {
 
     @Autowired
     private LocationTrackerService locationTrackerService;
@@ -24,5 +25,13 @@ public class DriverLocationController {
             @RequestBody DriverLocationDTO request) {
         locationTrackerService.updateDriverLocation(jwt.getSubject(), request);
         return ResponseEntity.ok("Location updated successfully");
+    }
+
+    @PatchMapping("/update-rider")
+    public ResponseEntity<String> updateRiderLocation(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestBody RiderLocationDTO request) {
+        locationTrackerService.updateRiderLocation(jwt.getSubject(), request);
+        return ResponseEntity.ok("Rider location updated successfully");
     }
 }

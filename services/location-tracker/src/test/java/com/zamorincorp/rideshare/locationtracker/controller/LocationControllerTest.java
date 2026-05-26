@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class DriverLocationControllerTest {
+class LocationControllerTest {
 
     @Mock
     private LocationTrackerService locationTrackerService;
 
     @InjectMocks
-    private DriverLocationController driverLocationController;
+    private LocationController driverLocationController;
 
     @Test
     void updateDriverLocation_returnsOkAndDelegatesToService() {
