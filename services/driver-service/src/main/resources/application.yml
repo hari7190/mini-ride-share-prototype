@@ -29,6 +29,7 @@ app:
     topics:
       driver-assigned: driver-assigned.v1
       ride-accepted: ride-accepted.v1
+      driver-declined: driver-declined.v1
       user-created: user-created.v1
     events:
       driver-assigned:
@@ -36,6 +37,9 @@ app:
         version: 1.0.0
       ride-accepted:
         type: com.zamorincorp.rideshare.driver.dto.RideAcceptedEvent
+        version: 1.0.0
+      driver-declined:
+        type: com.zamorincorp.rideshare.driver.dto.RideDeclinedEvent
         version: 1.0.0
 
 jwt:

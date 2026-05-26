@@ -11,9 +11,10 @@ import com.zamorincorp.rideshare.driver.dto.RideDispatchEvent;
 import com.zamorincorp.rideshare.driver.entity.Driver;
 import com.zamorincorp.rideshare.driver.repository.DriverRepository;
 import com.zamorincorp.rideshare.driver.entity.DriverStatus;
+import com.zamorincorp.rideshare.driver.entity.RideStatus;
 import com.zamorincorp.rideshare.driver.dto.RideAcceptedEvent;
+import com.zamorincorp.rideshare.driver.dto.RideDeclinedEvent;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -45,11 +46,21 @@ public class DriverService {
     @Value("${app.kafka.events.ride-accepted.version}")
     private String rideAcceptedEventVersion;
 
+    @Value("${app.kafka.topics.driver-declined}")
+    private String driverDeclinedTopic;
+
+    @Value("${app.kafka.events.driver-declined.type}")
+    private String driverDeclinedEventType;
+
+    @Value("${app.kafka.events.driver-declined.version}")
+    private String driverDeclinedEventVersion;
+
     // fetch rides
     public RideDTO fetchRide(String driverId) {
         return new RideDTO(
                 driverRepository.findById(parseDriverId(driverId)).map(Driver::getCurrentTripId)
-                        .orElseThrow(() -> new RuntimeException("Driver not found")));
+                        .orElseThrow(() -> new RuntimeException("Driver not found")),
+                RideStatus.MATCHED);
     }
 
     // accept ride
@@ -58,10 +69,25 @@ public class DriverService {
     }
 
     // decline ride
-    public String declineRide(String driverId){
+    public String declineRide(String driverId, RideDTO rideDTO){
+        Driver driver = driverRepository.findById(parseDriverId(driverId))
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+        if (rideDTO == null || rideDTO.rideId() == null) {
+            throw new IllegalArgumentException("Ride payload is required");
+        }
+
+        driver.setStatus(DriverStatus.AVAILABLE);
+        driver.setCurrentTripId(null);
+        driverRepository.save(driver);
+        publishDriverDeclinedEvent(driverId, rideDTO);
+
         return "decline-confirmed";
     }
 
+    // ride finished
+    public String rideFinish(String driverId){
+        return "ride-finished";
+    }
 
     // handle events
     public void handleDriverAssigned(RideDispatchEvent event) {
@@ -88,7 +114,7 @@ public class DriverService {
 
         // 1. Find driver in DB if not found, create a new driver
         UUID userId = parseDriverId(event.userId());
-        Driver driver = driverRepository.findById(userId)
+        driverRepository.findById(userId)
                 .orElseGet(() -> driverRepository.save(
                         Driver.builder()
                                 .driverId(userId)
@@ -129,6 +155,30 @@ public class DriverService {
                 .build();
         kafkaTemplate.send(eventMessage);
         log.info("Ride accepted event sent for tripId={} riderId={} driverId={}", event.tripId(), event.riderId(), event.driverId());
+    }
+
+    private void publishDriverDeclinedEvent(String driverId, RideDTO rideDTO) {
+        RideDeclinedEvent rideDeclinedEvent = new RideDeclinedEvent(
+                rideDTO.rideId(),
+                driverId,
+                RideStatus.DECLINED,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+        String payload;
+        try {
+            payload = objectMapper.writeValueAsString(rideDeclinedEvent);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Could not serialize ride declined event", e);
+        }
+        Message<String> eventMessage = MessageBuilder.withPayload(payload)
+                .setHeader(KafkaHeaders.TOPIC, driverDeclinedTopic)
+                .setHeader(KafkaHeaders.KEY, rideDeclinedEvent.tripId().toString())
+                .setHeader("eventType", driverDeclinedEventType)
+                .setHeader("eventVersion", driverDeclinedEventVersion)
+                .build();
+        kafkaTemplate.send(eventMessage);
+        log.info("Driver declined event sent for tripId={} driverId={}", rideDeclinedEvent.tripId(), rideDeclinedEvent.driverId());
     }
 
 

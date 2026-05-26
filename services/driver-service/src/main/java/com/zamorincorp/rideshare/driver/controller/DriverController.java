@@ -36,8 +36,14 @@ public class DriverController {
 
     // Decline a ride request
     @PostMapping("/decline-ride")
-    public ResponseEntity<String> declineRide(@AuthenticationPrincipal Jwt jwt) {
-        return ResponseEntity.ok(driverService.declineRide(jwt.getSubject()));
+    public ResponseEntity<String> declineRide(@AuthenticationPrincipal Jwt jwt, @RequestBody RideDTO rideDTO) {
+        return ResponseEntity.ok(driverService.declineRide(jwt.getSubject(), rideDTO));
+    }
+
+    // Ride finished
+    @PostMapping("/ride-finished")
+    public ResponseEntity<String> rideFinish(@AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok(driverService.rideFinish(jwt.getSubject()));
     }
     
 }
