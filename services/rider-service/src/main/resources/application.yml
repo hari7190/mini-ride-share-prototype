@@ -26,6 +26,7 @@ app:
     topics:
       ride-requests: ride-requests.v1
       driver-assigned: driver-assigned.v1
+      ride-declined: driver-declined.v1
     events:
       ride-requested:
         type: com.zamorincorp.rideshare.rider.dto.RideRequestedEventDTO

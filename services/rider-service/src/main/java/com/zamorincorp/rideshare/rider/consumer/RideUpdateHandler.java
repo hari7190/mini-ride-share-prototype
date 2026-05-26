@@ -6,13 +6,14 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zamorincorp.rideshare.rider.dto.DriverAssignedEventDTO;
+import com.zamorincorp.rideshare.rider.dto.RideDeclinedEventDTO;
 import com.zamorincorp.rideshare.rider.service.RiderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.zamorincorp.rideshare.rider.repository.TripRepository;
-import com.zamorincorp.rideshare.rider.entity.Trip;
-import com.zamorincorp.rideshare.rider.entity.TripStatus;
+import com.zamorincorp.rideshare.rider.repository.RideRepository;
+import com.zamorincorp.rideshare.rider.entity.Ride;
+import com.zamorincorp.rideshare.rider.entity.RideStatus;
 
 
 @Component
@@ -25,17 +26,29 @@ public class RideUpdateHandler {
     RiderService riderService;
     
     @Autowired
-    TripRepository tripRepository;
+    RideRepository rideRepository;
 
     @KafkaListener(topics = "${app.kafka.topics.driver-assigned}")
     public void onDriverAssigned(String payload) {
         try {
             DriverAssignedEventDTO event = objectMapper.readValue(payload, DriverAssignedEventDTO.class);
-            Trip trip = tripRepository.findById(event.tripId()).orElseThrow(() -> new RuntimeException("Trip not found"));
-            trip.setStatus(TripStatus.ACCEPTED);
-            tripRepository.save(trip);
+            Ride ride = rideRepository.findById(event.tripId()).orElseThrow(() -> new RuntimeException("Trip not found"));
+            ride.setStatus(RideStatus.MATCHED);
+            rideRepository.save(ride);
         } catch (Exception e) {
             log.error("Failed to process driver assigned message payload={}", payload, e);
+        }
+    }
+
+    @KafkaListener(topics = "${app.kafka.topics.ride-declined}")
+    public void onRideDeclined(String payload) {
+        try {
+            RideDeclinedEventDTO event = objectMapper.readValue(payload, RideDeclinedEventDTO.class);
+            Ride ride = rideRepository.findById(event.tripId()).orElseThrow(() -> new RuntimeException("Trip not found"));
+            ride.setStatus(RideStatus.PENDING);
+            rideRepository.save(ride);
+        } catch (Exception e) {
+            log.error("Failed to process ride declined message payload={}", payload, e);
         }
     }
 }

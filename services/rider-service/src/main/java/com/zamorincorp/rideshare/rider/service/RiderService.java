@@ -7,10 +7,8 @@ import java.time.Instant;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import com.zamorincorp.rideshare.rider.repository.TripRepository;
-import com.zamorincorp.rideshare.rider.entity.Trip;
+import com.zamorincorp.rideshare.rider.entity.Ride;
 import com.zamorincorp.rideshare.rider.dto.RideRequestDTO;
-import com.zamorincorp.rideshare.rider.entity.TripStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -21,6 +19,8 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
+import com.zamorincorp.rideshare.rider.repository.RideRepository;
+import com.zamorincorp.rideshare.rider.entity.RideStatus;
 
 @Service
 @Slf4j
@@ -29,7 +29,7 @@ public class RiderService {
             new GeometryFactory(new PrecisionModel(), 4326);
 
     @Autowired
-    private TripRepository tripRepository;
+    private RideRepository rideRepository;
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -47,21 +47,21 @@ public class RiderService {
     private String rideRequestedEventVersion;
 
     //create createRideRequest method
-    public Trip createRideRequest(RideRequestDTO rideRequestDTO, String riderIdSubject) {
+    public Ride createRideRequest(RideRequestDTO rideRequestDTO, String riderIdSubject) {
         UUID riderId = UUID.fromString(riderIdSubject);
 
         log.info("Creating ride request for riderId={} pickupLocation={} destination={}"
         , riderId, rideRequestDTO.pickupLocation(), rideRequestDTO.destination());
 
         // 1. Convert DTO to Model (Mapping)
-        Trip trip = new Trip();
+        Ride trip = new Ride();
         trip.setRiderId(riderId);
         trip.setPickupLocation(convertToPoint(rideRequestDTO.pickupLocation()));
         trip.setDestination(convertToPoint(rideRequestDTO.destination()));
-        trip.setStatus(TripStatus.PENDING);
+        trip.setStatus(RideStatus.PENDING);
 
         // 2. Save the trip to the database
-        Trip saved = tripRepository.save(trip);
+        Ride saved = rideRepository.save(trip);
 
         // 3. Publish a structured, versioned event for downstream matching services
         RideRequestedEvent rideRequestedEvent = new RideRequestedEvent(
@@ -73,7 +73,7 @@ public class RiderService {
                 saved.getRiderId().toString(),
                 saved.getPickupLocation().getCoordinate().x + ", " + saved.getPickupLocation().getCoordinate().y,
                 saved.getDestination().getCoordinate().x + ", " + saved.getDestination().getCoordinate().y,
-                saved.getStatus().name()
+                saved.getStatus().toString()
         );
 
         String payload;

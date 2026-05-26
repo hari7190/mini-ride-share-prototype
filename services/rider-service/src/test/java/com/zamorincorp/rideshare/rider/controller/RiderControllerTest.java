@@ -1,8 +1,8 @@
 package com.zamorincorp.rideshare.rider.controller;
 
 import com.zamorincorp.rideshare.rider.dto.RideRequestDTO;
-import com.zamorincorp.rideshare.rider.entity.Trip;
-import com.zamorincorp.rideshare.rider.entity.TripStatus;
+import com.zamorincorp.rideshare.rider.entity.Ride;
+import com.zamorincorp.rideshare.rider.entity.Ride;
 import com.zamorincorp.rideshare.rider.service.RiderService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

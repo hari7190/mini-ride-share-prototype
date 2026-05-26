@@ -1,7 +1,7 @@
 package com.zamorincorp.rideshare.rider.controller;
 
 import com.zamorincorp.rideshare.rider.dto.RideRequestDTO;
-import com.zamorincorp.rideshare.rider.entity.Trip;
+import com.zamorincorp.rideshare.rider.entity.Ride;
 import com.zamorincorp.rideshare.rider.service.RiderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,7 +37,7 @@ public class RiderController {
             // String email = jwt.getClaim("email");
 
             // 3. Delegate business logic to the service
-            Trip savedTrip = riderService.createRideRequest(rideRequestDTO, riderId);
+            Ride savedTrip = riderService.createRideRequest(rideRequestDTO, riderId);
 
             // 4. Return the saved trip with a 201 Created status
             return new ResponseEntity<>(savedTrip.getId(), HttpStatus.CREATED);

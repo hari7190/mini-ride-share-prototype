@@ -3,9 +3,9 @@ package com.zamorincorp.rideshare.rider.consumer;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zamorincorp.rideshare.rider.dto.DriverAssignedEventDTO;
-import com.zamorincorp.rideshare.rider.entity.Trip;
-import com.zamorincorp.rideshare.rider.entity.TripStatus;
-import com.zamorincorp.rideshare.rider.repository.TripRepository;
+import com.zamorincorp.rideshare.rider.entity.Ride;
+import com.zamorincorp.rideshare.rider.entity.RideStatus;
+import com.zamorincorp.rideshare.rider.repository.RideRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,10 +31,10 @@ class RideUpdateHandlerTest {
     private ObjectMapper objectMapper;
 
     @Mock
-    private TripRepository tripRepository;
+    private RideRepository rideRepository;
 
     @Captor
-    private ArgumentCaptor<Trip> tripCaptor;
+    private ArgumentCaptor<Ride> tripCaptor;
 
     private RideUpdateHandler rideUpdateHandler;
 
@@ -43,7 +43,7 @@ class RideUpdateHandlerTest {
     @BeforeEach
     void setUp() {
         rideUpdateHandler = new RideUpdateHandler(objectMapper);
-        ReflectionTestUtils.setField(rideUpdateHandler, "tripRepository", tripRepository);
+        ReflectionTestUtils.setField(rideUpdateHandler, "rideRepository", rideRepository);
         realObjectMapper = new ObjectMapper();
         realObjectMapper.findAndRegisterModules();
     }
@@ -51,28 +51,28 @@ class RideUpdateHandlerTest {
     @Test
     void onDriverAssigned_updatesTripStatusToAccepted() throws Exception {
         String payload = realObjectMapper.writeValueAsString(sampleEvent(99L));
-        Trip trip = new Trip();
+        Ride trip = new Ride();
         trip.setId(99L);
-        trip.setStatus(TripStatus.PENDING);
+        trip.setStatus(RideStatus.PENDING);
         when(objectMapper.readValue(payload, DriverAssignedEventDTO.class)).thenReturn(sampleEvent(99L));
-        when(tripRepository.findById(99L)).thenReturn(Optional.of(trip));
-        when(tripRepository.save(any(Trip.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(rideRepository.findById(99L)).thenReturn(Optional.of(trip));
+        when(rideRepository.save(any(Ride.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         rideUpdateHandler.onDriverAssigned(payload);
 
-        verify(tripRepository).save(tripCaptor.capture());
-        assertEquals(TripStatus.ACCEPTED, tripCaptor.getValue().getStatus());
+        verify(rideRepository).save(tripCaptor.capture());
+        assertEquals(RideStatus.MATCHED, tripCaptor.getValue().getStatus());
     }
 
     @Test
     void onDriverAssigned_whenTripNotFound_doesNotSave() throws Exception {
         String payload = realObjectMapper.writeValueAsString(sampleEvent(404L));
         when(objectMapper.readValue(payload, DriverAssignedEventDTO.class)).thenReturn(sampleEvent(404L));
-        when(tripRepository.findById(404L)).thenReturn(Optional.empty());
+        when(rideRepository.findById(404L)).thenReturn(Optional.empty());
 
         rideUpdateHandler.onDriverAssigned(payload);
 
-        verify(tripRepository, never()).save(any());
+        verify(rideRepository, never()).save(any());
     }
 
     @Test
@@ -83,7 +83,7 @@ class RideUpdateHandlerTest {
 
         rideUpdateHandler.onDriverAssigned(payload);
 
-        verify(tripRepository, never()).save(any());
+        verify(rideRepository, never()).save(any());
     }
 
     private DriverAssignedEventDTO sampleEvent(Long tripId) {

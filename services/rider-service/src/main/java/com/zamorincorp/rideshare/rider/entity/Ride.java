@@ -14,7 +14,7 @@ import org.locationtech.jts.geom.Point;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Trip {
+public class Ride {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +37,6 @@ public class Trip {
     private Point destination;
 
     @Enumerated(EnumType.STRING)
-    private TripStatus status; 
+    private RideStatus status;
     
 }

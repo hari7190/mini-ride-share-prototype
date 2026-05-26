@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zamorincorp.rideshare.rider.dto.RideRequestDTO;
 import com.zamorincorp.rideshare.rider.dto.RideRequestedEvent;
-import com.zamorincorp.rideshare.rider.entity.Trip;
-import com.zamorincorp.rideshare.rider.entity.TripStatus;
-import com.zamorincorp.rideshare.rider.repository.TripRepository;
+import com.zamorincorp.rideshare.rider.entity.Ride;
+import com.zamorincorp.rideshare.rider.entity.RideStatus;
+import com.zamorincorp.rideshare.rider.repository.RideRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,7 @@ class RiderServiceTest {
             UUID.fromString("550e8400-e29b-41d4-a716-446655440001");
 
     @Mock
-    private TripRepository tripRepository;
+    private RideRepository rideRepository;
 
     @Mock
     private KafkaTemplate<String, String> kafkaTemplate;
@@ -50,7 +50,7 @@ class RiderServiceTest {
     private RiderService riderService;
 
     @Captor
-    private ArgumentCaptor<Trip> tripCaptor;
+    private ArgumentCaptor<Ride> tripCaptor;
 
     @Captor
     private ArgumentCaptor<Message<String>> messageCaptor;
@@ -66,19 +66,19 @@ class RiderServiceTest {
     @Test
     void createRideRequest_savesTripAndPublishesEvent() throws Exception {
         RideRequestDTO dto = sampleRideRequest();
-        when(tripRepository.save(any(Trip.class))).thenAnswer(invocation -> {
-            Trip trip = invocation.getArgument(0);
+        when(rideRepository.save(any(Ride.class))).thenAnswer(invocation -> {
+            Ride trip = invocation.getArgument(0);
             trip.setId(42L);
             return trip;
         });
         when(objectMapper.writeValueAsString(any(RideRequestedEvent.class))).thenReturn("{\"ok\":true}");
 
-        Trip result = riderService.createRideRequest(dto, RIDER_ID.toString());
+        Ride result = riderService.createRideRequest(dto, RIDER_ID.toString());
 
-        verify(tripRepository).save(tripCaptor.capture());
-        Trip savedTrip = tripCaptor.getValue();
+        verify(rideRepository).save(tripCaptor.capture());
+        Ride savedTrip = tripCaptor.getValue();
         assertEquals(RIDER_ID, savedTrip.getRiderId());
-        assertEquals(TripStatus.PENDING, savedTrip.getStatus());
+        assertEquals(RideStatus.PENDING, savedTrip.getStatus());
         assertEquals(-79.38, savedTrip.getPickupLocation().getX(), 0.001);
         assertEquals(43.65, savedTrip.getPickupLocation().getY(), 0.001);
         assertEquals(-79.40, savedTrip.getDestination().getX(), 0.001);
@@ -104,15 +104,15 @@ class RiderServiceTest {
         assertThrows(IllegalArgumentException.class,
                 () -> riderService.createRideRequest(dto, RIDER_ID.toString()));
 
-        verify(tripRepository, never()).save(any());
+        verify(rideRepository, never()).save(any());
         verify(kafkaTemplate, never()).send(any(Message.class));
     }
 
     @Test
     void createRideRequest_whenSerializationFails_throwsIllegalStateException() throws Exception {
         RideRequestDTO dto = sampleRideRequest();
-        when(tripRepository.save(any(Trip.class))).thenAnswer(invocation -> {
-            Trip trip = invocation.getArgument(0);
+        when(rideRepository.save(any(Ride.class))).thenAnswer(invocation -> {
+            Ride trip = invocation.getArgument(0);
             trip.setId(42L);
             return trip;
         });
