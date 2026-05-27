@@ -43,3 +43,4 @@ terraform.rc
 *.tfvars
 *.tfvars.json
 application-local.yml
+.DS_Store

@@ -1,0 +1,49 @@
+# values.yaml
+kind: DaemonSet
+
+# Ensure Fluent Bit has permission to read host logs and query the Kubernetes API for metadata
+serviceAccount:
+  create: true
+
+# Configure the main Fluent Bit engine routing and parsing pipelines
+config:
+  service: |
+    [SERVICE]
+        Flush         1
+        Log_Level     info
+        Daemon        off
+        Parsers_File  parsers.conf
+
+  # 1. Grab logs from the node file system where K8s writes container stdout
+  inputs: |
+    [INPUT]
+        Name              tail
+        Tag               kube.*
+        Path              /var/log/containers/*.log
+        Multiline.Parser  docker, cri
+        Mem_Buf_Limit     50MB
+        Skip_Long_Lines   On
+
+  # 2. Enrich the log stream with Kubernetes context (pod name, namespace, labels)
+  filters: |
+    [FILTER]
+        Name                kubernetes
+        Match               kube.*
+        Kube_URL            https://kubernetes.default.svc:443
+        Kube_CA_File        /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        Kube_Token_File     /var/run/secrets/kubernetes.io/serviceaccount/token
+        Kube_Tag_Prefix     kube.var.log.containers.
+        Merge_Log           On
+        Merge_Log_Key       log_processed
+        Keep_Log            Off
+
+  # 3. Ship the structured data straight into your Kafka instance
+  outputs: |
+    [OUTPUT]
+        Name            kafka
+        Match           kube.*
+        Brokers         kafka-service.dev.svc.cluster.local:9092
+        Topics          kubernetes-logs
+        Format          json
+        # Optional optimization: Key by pod name to keep sequence ordering within a Kafka partition
+        Message_Key_Field kubernetes.pod_name
