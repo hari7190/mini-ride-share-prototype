@@ -1,6 +1,10 @@
 # values.yaml
 kind: DaemonSet
 
+# Force the DaemonSet to scale down to 0 pods
+nodeSelector:
+  non-existent-label: "true"
+
 # Ensure Fluent Bit has permission to read host logs and query the Kubernetes API for metadata
 serviceAccount:
   create: true
