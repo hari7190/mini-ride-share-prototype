@@ -1,0 +1,67 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: payment-service
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST}:3306/ride_share_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: rider-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+
+app:
+  kafka:
+    topics:
+      ride-requests: ride-requests.v1
+      driver-assigned: driver-assigned.v1
+      ride-declined: driver-declined.v1
+    events:
+      ride-requested:
+        type: com.zamorincorp.rideshare.rider.dto.RideRequestedEventDTO
+        version: "1"
+      driver-assigned:
+        type: com.zamorincorp.rideshare.rider.dto.DriverAssignedEventDTO
+        version: 1.0.0
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000 # 24 hours in milliseconds
+
+info:
+  app:
+    name: rider-service
+    description: Rider Service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+    metrics:
+      access: read_only
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
