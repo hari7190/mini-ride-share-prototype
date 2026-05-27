@@ -1,23 +1,10 @@
 package com.zamorincorp.rideshare.rider.controller;
 
-import com.zamorincorp.rideshare.rider.dto.RideRequestDTO;
-import com.zamorincorp.rideshare.rider.entity.Ride;
-import com.zamorincorp.rideshare.rider.entity.Ride;
 import com.zamorincorp.rideshare.rider.service.RiderService;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.jwt.Jwt;
-
-import java.time.Instant;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RiderControllerTest {
