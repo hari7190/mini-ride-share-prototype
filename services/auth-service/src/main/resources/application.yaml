@@ -63,5 +63,5 @@ app:
       user-created: user-created.v1
     events:
       user-created:
-        type: com.zamorincorp.rideshare.auth.dto.UserCreatedEvent
+        type: foo.hari.rideshare.auth.dto.UserCreatedEvent
         version: 1.0.0

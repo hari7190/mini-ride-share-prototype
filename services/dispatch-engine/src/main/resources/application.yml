@@ -31,10 +31,10 @@ app:
       ride-dispatch: driver-assigned.v1
     events:
       ride-requested:
-        type: com.zamorincorp.rideshare.dispatch.dto.RideRequestedEvent
+        type: foo.hari.rideshare.dispatch.dto.RideRequestedEvent
         version: 1.0.0
       ride-dispatch:
-        type: com.zamorincorp.rideshare.dispatch.dto.RideDispatchEvent
+        type: foo.hari.rideshare.dispatch.dto.RideDispatchEvent
         version: 1.0.0
 
 jwt:

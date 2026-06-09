@@ -29,10 +29,10 @@ app:
       ride-declined: driver-declined.v1
     events:
       ride-requested:
-        type: com.zamorincorp.rideshare.rider.dto.RideRequestedEventDTO
+        type: foo.hari.rideshare.rider.dto.RideRequestedEventDTO
         version: "1"
       driver-assigned:
-        type: com.zamorincorp.rideshare.rider.dto.DriverAssignedEventDTO
+        type: foo.hari.rideshare.rider.dto.DriverAssignedEventDTO
         version: 1.0.0
 
 jwt:

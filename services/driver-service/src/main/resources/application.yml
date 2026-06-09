@@ -33,13 +33,13 @@ app:
       user-created: user-created.v1
     events:
       driver-assigned:
-        type: com.zamorincorp.rideshare.driver.dto.DriverAssignedEvent
+        type: foo.hari.rideshare.driver.dto.DriverAssignedEvent
         version: 1.0.0
       ride-accepted:
-        type: com.zamorincorp.rideshare.driver.dto.RideAcceptedEvent
+        type: foo.hari.rideshare.driver.dto.RideAcceptedEvent
         version: 1.0.0
       driver-declined:
-        type: com.zamorincorp.rideshare.driver.dto.RideDeclinedEvent
+        type: foo.hari.rideshare.driver.dto.RideDeclinedEvent
         version: 1.0.0
 
 jwt:

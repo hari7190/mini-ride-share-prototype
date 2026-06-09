@@ -31,7 +31,7 @@ app:
       user-created: user-created.v1
     events:
       driver-assigned:
-        type: com.zamorincorp.rideshare.locationtracker.dto.RideDispatchEvent
+        type: foo.hari.rideshare.locationtracker.dto.RideDispatchEvent
         version: 1.0.0
 
 jwt:
