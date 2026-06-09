@@ -6,14 +6,14 @@ permissions:
   actions: write
 
 on:
-  push:
-    branches: [ "main" ]
-    paths:
-      - 'services/auth-service/**'
-      - 'services/rider-service/**'
-      - 'services/dispatch-engine/**'
-      - 'services/driver-service/**'
-      - 'services/location-tracker/**'
+  # push:
+  #   branches: [ "main" ]
+  #   paths:
+  #     - 'services/auth-service/**'
+  #     - 'services/rider-service/**'
+  #     - 'services/dispatch-engine/**'
+  #     - 'services/driver-service/**'
+  #     - 'services/location-tracker/**'
   workflow_dispatch:
     inputs:
       auth:
