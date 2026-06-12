@@ -18,8 +18,8 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(length = 36, columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.UUID)
+    @Column(columnDefinition = "uuid")
     private UUID id;
 
     @Column(unique = true, nullable = false)
