@@ -94,6 +94,7 @@ Notes on troubleshooting this setup: [Debugging](docs/Debugging.md).
 8. Add caching into Github actions for quicker build times.
 9. Refactor to project level Helm chart from app level helm chart.
 10. Tighten up CORS implementation.
+11. Implement distributed locking for driver matching logic
 
 
 Decisions :
