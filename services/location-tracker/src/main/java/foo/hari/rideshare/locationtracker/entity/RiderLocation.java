@@ -26,14 +26,14 @@ public class RiderLocation {
 
     /** Same UUID as {@code users.id} / {@code riders.rider_id}. */
     @Id
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "rider_id", length = 36, columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.UUID)
+    @Column(name = "rider_id", columnDefinition = "uuid")
     private UUID riderId;
 
     /**
      * Geographic point in WGS-84 (SRID 4326). Nullable until the rider reports a position.
      */
-    @Column(name = "current_location", columnDefinition = "POINT SRID 4326")
+    @Column(name = "current_location", columnDefinition = "geometry(Point,4326)")
     @JdbcTypeCode(SqlTypes.GEOMETRY)
     private Point currentLocation;
 

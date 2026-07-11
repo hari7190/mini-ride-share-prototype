@@ -26,14 +26,14 @@ public class DriverLocation {
 
     /** Same UUID as {@code users.id} / {@code drivers.driver_id}. */
     @Id
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "driver_id", length = 36, columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.UUID)
+    @Column(name = "driver_id", columnDefinition = "uuid")
     private UUID driverId;
 
     /**
      * Geographic point in WGS-84 (SRID 4326). Nullable until the driver reports a position.
      */
-    @Column(name = "current_location", columnDefinition = "POINT SRID 4326")
+    @Column(name = "current_location", columnDefinition = "geometry(Point,4326)")
     @JdbcTypeCode(SqlTypes.GEOMETRY)
     private Point currentLocation;
 
