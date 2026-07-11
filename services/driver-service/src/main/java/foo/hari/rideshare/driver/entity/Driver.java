@@ -17,8 +17,8 @@ import org.hibernate.type.SqlTypes;
 public class Driver {
     /** Same UUID as {@code users.id} in auth-service. */
     @Id
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "driver_id", length = 36, columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.UUID)
+    @Column(name = "driver_id", columnDefinition = "uuid")
     private UUID driverId;
 
     private String name;
