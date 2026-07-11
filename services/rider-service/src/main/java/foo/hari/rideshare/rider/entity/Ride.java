@@ -21,18 +21,18 @@ public class Ride {
     private Long id;
 
     /** Same UUID as {@code users.id} in auth-service (JWT {@code sub}). */
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "rider_id", length = 36, columnDefinition = "CHAR(36)")
+    @JdbcTypeCode(SqlTypes.UUID)
+    @Column(name = "rider_id", columnDefinition = "uuid")
     private UUID riderId;
 
     /**
      * Geographic point in WGS-84 (SRID 4326). Nullable until the driver reports a position.
      */
-    @Column(name = "pickup_location", columnDefinition = "POINT SRID 4326")
+    @Column(name = "pickup_location", columnDefinition = "geometry(Point,4326)")
     @JdbcTypeCode(SqlTypes.GEOMETRY)
     private Point pickupLocation;
 
-    @Column(name = "destination", columnDefinition = "POINT SRID 4326")
+    @Column(name = "destination", columnDefinition = "geometry(Point,4326)")
     @JdbcTypeCode(SqlTypes.GEOMETRY)
     private Point destination;
 
