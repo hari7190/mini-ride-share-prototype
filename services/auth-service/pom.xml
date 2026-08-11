@@ -6,9 +6,9 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.5.11</version> <!-- Use the stable Spring Boot 3 version -->
-        <relativePath/> 
+        <relativePath/>
     </parent>
-    
+
     <groupId>com.ride-share</groupId>
     <artifactId>auth-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -16,7 +16,7 @@
     <description>Identity and Access Management Service</description>
 
     <properties>
-        <java.version>25</java.version>
+        <java.version>26</java.version>
         <jjwt.version>0.12.5</jjwt.version>
     </properties>
 
@@ -95,6 +95,22 @@
 
     <build>
         <plugins>
+            <!-- Required for Lombok annotation processing during mvn test / build -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
